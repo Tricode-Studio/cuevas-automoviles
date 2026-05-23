@@ -303,7 +303,7 @@ i.ph { vertical-align: -0.125em; }
 .hero-bg-image {
   position: absolute;
   inset: -20px;
-  background: url('../src/foto frente local.PNG') center/cover no-repeat;
+  background: url('/images/foto frente local.PNG') center/cover no-repeat;
   z-index: 0;
   filter: blur(3px) brightness(0.4);
   transform: scale(1.06);

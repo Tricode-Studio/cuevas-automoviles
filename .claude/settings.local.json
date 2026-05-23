@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(New-Item -ItemType Directory -Force \"D:\\\\Lautaro\\\\Tricode\\\\Cuevas-Automoviles\\\\src\\\\components\")",
+      "Bash(Out-Null)",
+      "Bash(New-Item -ItemType Directory -Force \"D:\\\\Lautaro\\\\Tricode\\\\Cuevas-Automoviles\\\\src\\\\layouts\")",
+      "Bash(New-Item -ItemType Directory -Force \"D:\\\\Lautaro\\\\Tricode\\\\Cuevas-Automoviles\\\\src\\\\pages\")",
+      "Bash(New-Item -ItemType Directory -Force \"D:\\\\Lautaro\\\\Tricode\\\\Cuevas-Automoviles\\\\src\\\\styles\")",
+      "Bash(New-Item -ItemType Directory -Force \"D:\\\\Lautaro\\\\Tricode\\\\Cuevas-Automoviles\\\\public\\\\images\")",
+      "Bash(New-Item -ItemType Directory -Force \"D:\\\\Lautaro\\\\Tricode\\\\Cuevas-Automoviles\\\\public\\\\js\")",
+      "Bash(Write-Host \"Directories created.\")",
+      "Bash(cp \"D:/Lautaro/Tricode/Cuevas-Automoviles/src/\"*.png \"D:/Lautaro/Tricode/Cuevas-Automoviles/public/images/\")",
+      "Bash(cp \"D:/Lautaro/Tricode/Cuevas-Automoviles/src/\"*.PNG \"D:/Lautaro/Tricode/Cuevas-Automoviles/public/images/\")",
+      "Bash(cp \"D:/Lautaro/Tricode/Cuevas-Automoviles/src/\"*.svg \"D:/Lautaro/Tricode/Cuevas-Automoviles/public/images/\")",
+      "Bash(cp \"D:/Lautaro/Tricode/Cuevas-Automoviles/src/\"*.ico \"D:/Lautaro/Tricode/Cuevas-Automoviles/public/images/\")",
+      "Bash(npm install *)",
+      "Bash(npm config *)"
+    ]
+  }
+}
