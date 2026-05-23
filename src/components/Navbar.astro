@@ -1,0 +1,49 @@
+---
+interface Props {
+  navClass?: string;
+  activeLink?: string;
+}
+const { navClass = 'solid', activeLink = '' } = Astro.props;
+const links = [
+  { href: '/', label: 'Inicio', key: 'inicio' },
+  { href: '/catalogo', label: 'Catálogo', key: 'catalogo' },
+  { href: '/marcas', label: 'Marcas', key: 'marcas' },
+  { href: '/servicios', label: 'Servicios', key: 'servicios' },
+  { href: '/nosotros', label: 'Nosotros', key: 'nosotros' },
+  { href: '/contacto', label: 'Contacto', key: 'contacto' },
+];
+const mobileIcons: Record<string,string> = {
+  inicio: 'ph-house', catalogo: 'ph-car', marcas: 'ph-tag',
+  servicios: 'ph-wrench', nosotros: 'ph-users', contacto: 'ph-map-pin',
+};
+---
+<nav id="navbar" class={navClass}>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <img src="/images/logo cuevas.png" alt="Cuevas Logo">
+      <div class="nav-logo-text">
+        <span class="brand">CUEVAS</span>
+        <span class="tagline">Automóviles · Trinidad</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      {links.map(l => (
+        <a href={l.href} class={activeLink === l.key ? 'active' : ''}>{l.label}</a>
+      ))}
+    </div>
+    <div class="nav-cta">
+      <a href="tel:+59846343775" class="btn btn-outline btn-sm"><i class="ph ph-phone"></i> Llamar</a>
+      <a href="https://wa.me/59899364330" target="_blank" class="btn btn-primary btn-sm">WhatsApp</a>
+    </div>
+    <button id="hamburger" class="nav-hamburger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div id="mobileNav" class="mobile-nav">
+  {links.map(l => (
+    <a href={l.href}><i class={`ph ${mobileIcons[l.key]}`}></i> {l.label}</a>
+  ))}
+  <a href="tel:+59846343775" class="btn btn-ghost" style="margin-top:8px"><i class="ph ph-phone"></i> Llamar</a>
+  <a href="https://wa.me/59899364330" target="_blank" class="btn btn-primary"><i class="ph ph-whatsapp-logo"></i> WhatsApp</a>
+</div>

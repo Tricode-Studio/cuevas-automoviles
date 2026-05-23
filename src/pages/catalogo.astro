@@ -1,0 +1,130 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="Catálogo de Vehículos | Cuevas Automóviles Uruguay"
+  description="Explorá nuestro catálogo completo de vehículos usados y seminuevos en Uruguay. Filtrá por marca, modelo, año y precio."
+  navClass="solid"
+  activeLink="catalogo"
+>
+
+<!-- HEADER -->
+<div class="catalog-header">
+  <div class="container" style="position:relative;z-index:1">
+    <div class="breadcrumb">
+      <a href="/">Inicio</a>
+      <span class="sep">›</span>
+      <span class="current">Catálogo</span>
+    </div>
+    <h1>Catálogo de Vehículos</h1>
+    <p>Encontrá el auto perfecto con nuestros filtros de búsqueda</p>
+  </div>
+</div>
+
+<!-- CATALOG MAIN -->
+<div class="container" id="catalogMain">
+  <div class="catalog-layout">
+
+    <!-- FILTERS SIDEBAR -->
+    <aside class="filters-sidebar">
+      <div class="filters-card">
+        <div class="filters-title">
+          🔍 Filtros
+          <span id="resetFilters" class="filters-reset">Limpiar</span>
+        </div>
+
+        <!-- Search -->
+        <div class="filter-group">
+          <label for="searchInput">Buscar</label>
+          <input type="text" id="searchInput" placeholder="Marca, modelo...">
+        </div>
+
+        <!-- Brand -->
+        <div class="filter-group">
+          <label for="filterBrand">Marca</label>
+          <div class="select-wrapper">
+            <select id="filterBrand">
+              <option value="">Todas las marcas</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fuel -->
+        <div class="filter-group">
+          <label for="filterFuel">Combustible</label>
+          <div class="select-wrapper">
+            <select id="filterFuel">
+              <option value="">Todos</option>
+              <option value="Nafta">Nafta</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Eléctrico">Eléctrico</option>
+              <option value="Híbrido">Híbrido</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Transmission -->
+        <div class="filter-group">
+          <label for="filterTrans">Transmisión</label>
+          <div class="select-wrapper">
+            <select id="filterTrans">
+              <option value="">Todas</option>
+              <option value="Automático">Automático</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Year range -->
+        <div class="filter-group">
+          <label>Año</label>
+          <div class="price-range">
+            <input type="text" id="filterYearMin" placeholder="Desde">
+            <input type="text" id="filterYearMax" placeholder="Hasta">
+          </div>
+        </div>
+
+        <!-- Price range -->
+        <div class="filter-group">
+          <label>Precio (USD)</label>
+          <div class="price-range">
+            <input type="text" id="filterPriceMin" placeholder="Mín">
+            <input type="text" id="filterPriceMax" placeholder="Máx">
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--light-mid)">
+          <p style="font-size:.8rem;color:var(--grey-dark);margin-bottom:12px">¿No encontrás lo que buscás?</p>
+          <a href="https://wa.me/59899364330?text=Hola!%20Busco%20un%20vehículo%20específico%20y%20no%20lo%20encuentro%20en%20el%20catálogo" target="_blank" class="btn btn-primary" style="width:100%;justify-content:center">Consultar por WhatsApp</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RESULTS -->
+    <div class="catalog-results">
+      <div class="catalog-toolbar">
+        <div id="catalogCount" class="catalog-count">Cargando vehículos…</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="catalog-sort">
+            <label for="filterSort" style="font-size:.85rem">Ordenar:</label>
+            <select id="filterSort">
+              <option value="featured">Destacados</option>
+              <option value="year-desc">Año: más nuevo</option>
+              <option value="year-asc">Año: más antiguo</option>
+              <option value="km-asc">Menor kilometraje</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="brandFilterBadge" class="brand-filter-badge" role="status" aria-live="polite"></div>
+      <div id="catalogGrid" class="catalog-grid"></div>
+      <div id="pagination" class="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/catalogo.js" is:inline></script>
+
+</Layout>

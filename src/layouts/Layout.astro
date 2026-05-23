@@ -1,0 +1,32 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import WhatsappFloat from '../components/WhatsappFloat.astro';
+import '../styles/styles.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  navClass?: string;
+  activeLink?: string;
+}
+const { title, description = 'Cuevas Automóviles, concesionaria en Trinidad, Uruguay.', navClass = 'solid', activeLink = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+</head>
+<body>
+  <Navbar navClass={navClass} activeLink={activeLink} />
+  <slot />
+  <Footer />
+  <WhatsappFloat />
+  <script src="/js/main.js" is:inline></script>
+</body>
+</html>

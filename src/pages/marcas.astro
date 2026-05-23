@@ -1,186 +1,148 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Marcas | Cuevas Automóviles · Trinidad, Uruguay</title>
-  <meta name="description" content="Marcas oficiales en Cuevas Automóviles Trinidad: JAC, Mitsubishi, Chery, Fiat (autos), Trek y Trink eléctricas (bicicletas), Honda y Mercury (motores náuticos), Siux (embarcaciones). 36 años de trayectoria en Flores, Uruguay.">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-  <style>
-    /* ── LOGO CARDS ──────────────────────────────────────── */
-    .brand-section-title {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin: 60px 0 32px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid var(--light-alt, #eee);
-    }
-    .brand-section-title .label {
-      font-size: .72rem;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--blue);
-      background: rgba(37,99,235,.08);
-      padding: 4px 12px;
-      border-radius: 20px;
-      white-space: nowrap;
-    }
-    .brand-section-title h2 {
-      font-size: 1.35rem;
-      margin: 0;
-      color: var(--navy);
-    }
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  title="Marcas | Cuevas Automóviles · Trinidad, Uruguay"
+  description="Marcas oficiales en Cuevas Automóviles Trinidad: JAC, Mitsubishi, Chery, Fiat (autos), Trek y Trink eléctricas (bicicletas), Honda y Mercury (motores náuticos), Siux (embarcaciones). 36 años de trayectoria en Flores, Uruguay."
+  navClass="solid"
+  activeLink="marcas"
+>
 
-    .logo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 24px;
-      margin-bottom: 8px;
-    }
-    .logo-card {
-      background: #fff;
-      border: 1.5px solid #eaecf0;
-      border-radius: 18px;
-      padding: 32px 24px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 16px;
-      transition: transform .2s, box-shadow .2s, border-color .2s;
-      text-decoration: none;
-      color: inherit;
-    }
-    .logo-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 36px rgba(0,0,0,.10);
-      border-color: var(--blue);
-    }
-    .logo-card .logo-img-wrap {
-      width: 120px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo-card .logo-img-wrap img {
-      max-width: 120px;
-      max-height: 75px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-    }
-    /* CSS text logo fallback */
-    .logo-text {
-      font-size: 1.9rem;
-      font-weight: 900;
-      letter-spacing: -.03em;
-      color: var(--navy);
-      line-height: 1;
-    }
-    .logo-card h3 {
-      font-size: 1.05rem;
-      margin: 0;
-      color: var(--navy);
-    }
-    .logo-card p {
-      font-size: .84rem;
-      color: var(--grey-dark, #666);
-      margin: 0;
-      line-height: 1.5;
-    }
-    .logo-card .card-link {
-      font-size: .8rem;
-      font-weight: 700;
-      color: var(--blue);
-      letter-spacing: .04em;
-    }
+<style>
+  /* ── LOGO CARDS ──────────────────────────────────────── */
+  .brand-section-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 60px 0 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--light-alt, #eee);
+  }
+  .brand-section-title .label {
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: rgba(37,99,235,.08);
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .brand-section-title h2 {
+    font-size: 1.35rem;
+    margin: 0;
+    color: var(--navy);
+  }
 
-    /* ── PHOTO GALLERY ───────────────────────────────────── */
-    .local-gallery {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 16px;
-      margin-top: 48px;
-    }
-    .local-gallery .main-photo {
-      grid-column: 1 / -1;
-      border-radius: 18px;
-      overflow: hidden;
-      height: 380px;
-    }
-    .local-gallery .side-photo {
-      border-radius: 18px;
-      overflow: hidden;
-      height: 240px;
-    }
-    .local-gallery img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform .5s ease;
-    }
-    .local-gallery .main-photo:hover img,
-    .local-gallery .side-photo:hover img {
-      transform: scale(1.04);
-    }
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 8px;
+  }
+  .logo-card {
+    background: #fff;
+    border: 1.5px solid #eaecf0;
+    border-radius: 18px;
+    padding: 32px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .logo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0,0,0,.10);
+    border-color: var(--blue);
+  }
+  .logo-card .logo-img-wrap {
+    width: 120px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-card .logo-img-wrap img {
+    max-width: 120px;
+    max-height: 75px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+  /* CSS text logo fallback */
+  .logo-text {
+    font-size: 1.9rem;
+    font-weight: 900;
+    letter-spacing: -.03em;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .logo-card h3 {
+    font-size: 1.05rem;
+    margin: 0;
+    color: var(--navy);
+  }
+  .logo-card p {
+    font-size: .84rem;
+    color: var(--grey-dark, #666);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .logo-card .card-link {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: .04em;
+  }
 
-    @media (max-width: 600px) {
-      .local-gallery { grid-template-columns: 1fr; }
-      .local-gallery .main-photo { height: 240px; }
-      .local-gallery .side-photo { height: 200px; }
-      .logo-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-    }
-  </style>
-</head>
-<body>
+  /* ── PHOTO GALLERY ───────────────────────────────────── */
+  .local-gallery {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 16px;
+    margin-top: 48px;
+  }
+  .local-gallery .main-photo {
+    grid-column: 1 / -1;
+    border-radius: 18px;
+    overflow: hidden;
+    height: 380px;
+  }
+  .local-gallery .side-photo {
+    border-radius: 18px;
+    overflow: hidden;
+    height: 240px;
+  }
+  .local-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .local-gallery .main-photo:hover img,
+  .local-gallery .side-photo:hover img {
+    transform: scale(1.04);
+  }
 
-<!-- NAVBAR -->
-<nav id="navbar" class="solid">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <img src="src/logo cuevas.png" alt="Cuevas Logo">
-      <div class="nav-logo-text">
-        <span class="brand">CUEVAS</span>
-        <span class="tagline">Automóviles · Trinidad</span>
-      </div>
-    </a>
-    <div class="nav-links">
-      <a href="index.html">Inicio</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="marcas.html" class="active">Marcas</a>
-      <a href="servicios.html">Servicios</a>
-      <a href="nosotros.html">Nosotros</a>
-      <a href="contacto.html">Contacto</a>
-    </div>
-    <div class="nav-cta">
-      <a href="tel:+59846343775" class="btn btn-outline btn-sm"><i class="ph ph-phone"></i> Llamar</a>
-      <a href="https://wa.me/59899364330" target="_blank" class="btn btn-primary btn-sm">WhatsApp</a>
-    </div>
-    <button id="hamburger" class="nav-hamburger" aria-label="Menú">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-<div id="mobileNav" class="mobile-nav">
-  <a href="index.html"><i class="ph ph-house"></i> Inicio</a>
-  <a href="catalogo.html"><i class="ph ph-car"></i> Catálogo</a>
-  <a href="marcas.html"><i class="ph ph-tag"></i> Marcas</a>
-  <a href="servicios.html"><i class="ph ph-wrench"></i> Servicios</a>
-  <a href="nosotros.html"><i class="ph ph-users"></i> Nosotros</a>
-  <a href="contacto.html"><i class="ph ph-map-pin"></i> Contacto</a>
-  <a href="https://wa.me/59899364330" target="_blank" class="btn btn-primary"><i class="ph ph-whatsapp-logo"></i> WhatsApp</a>
-</div>
+  @media (max-width: 600px) {
+    .local-gallery { grid-template-columns: 1fr; }
+    .local-gallery .main-photo { height: 240px; }
+    .local-gallery .side-photo { height: 200px; }
+    .logo-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  }
+</style>
 
 <!-- HEADER -->
 <div class="about-header">
   <div class="container" style="position:relative;z-index:1">
     <div class="breadcrumb">
-      <a href="index.html">Inicio</a>
+      <a href="/">Inicio</a>
       <span class="sep">›</span>
       <span class="current">Marcas</span>
     </div>
@@ -203,7 +165,7 @@
     <div class="logo-grid">
 
       <!-- JAC -->
-      <a href="catalogo.html?marca=JAC" class="logo-card animate-on-scroll">
+      <a href="/catalogo?marca=JAC" class="logo-card animate-on-scroll">
         <div class="logo-img-wrap">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/JAC.svg/300px-JAC.svg.png"
                alt="JAC Motors logo"
@@ -216,7 +178,7 @@
       </a>
 
       <!-- Mitsubishi -->
-      <a href="catalogo.html?marca=Mitsubishi" class="logo-card animate-on-scroll delay-1">
+      <a href="/catalogo?marca=Mitsubishi" class="logo-card animate-on-scroll delay-1">
         <div class="logo-img-wrap">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Mitsubishi_logo.svg/250px-Mitsubishi_logo.svg.png"
                alt="Mitsubishi Motors logo"
@@ -229,7 +191,7 @@
       </a>
 
       <!-- Chery -->
-      <a href="catalogo.html?marca=Chery" class="logo-card animate-on-scroll delay-2">
+      <a href="/catalogo?marca=Chery" class="logo-card animate-on-scroll delay-2">
         <div class="logo-img-wrap">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Chery_logo_2013.svg/250px-Chery_logo_2013.svg.png"
                alt="Chery logo"
@@ -242,7 +204,7 @@
       </a>
 
       <!-- Fiat -->
-      <a href="catalogo.html?marca=Fiat" class="logo-card animate-on-scroll delay-3">
+      <a href="/catalogo?marca=Fiat" class="logo-card animate-on-scroll delay-3">
         <div class="logo-img-wrap">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Logo_fiat_2020.svg/200px-Logo_fiat_2020.svg.png"
                alt="Fiat logo"
@@ -255,7 +217,7 @@
       </a>
 
       <!-- Volvo -->
-      <a href="catalogo.html?marca=Volvo" class="logo-card animate-on-scroll">
+      <a href="/catalogo?marca=Volvo" class="logo-card animate-on-scroll">
         <div class="logo-img-wrap">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Volvo_logo.svg/250px-Volvo_logo.svg.png"
                alt="Volvo logo"
@@ -293,7 +255,7 @@
       <!-- Trink -->
       <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesan%20las%20bicicletas%20Trink" target="_blank" class="logo-card animate-on-scroll delay-1">
         <div class="logo-img-wrap">
-          <img src="src/trink bicicletas.PNG"
+          <img src="/images/trink bicicletas.PNG"
                alt="Trink Bicicletas logo"
                onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
           <span class="logo-text" style="display:none;color:#1a7a3c">TRINK</span>
@@ -369,13 +331,13 @@
 
     <div class="local-gallery animate-on-scroll">
       <div class="main-photo">
-        <img src="src/foto frente local.PNG" alt="Frente del local Cuevas Automóviles Trinidad">
+        <img src="/images/foto frente local.PNG" alt="Frente del local Cuevas Automóviles Trinidad">
       </div>
       <div class="side-photo">
-        <img src="src/foto frente local 2.PNG" alt="Cuevas Automóviles Trinidad - fachada">
+        <img src="/images/foto frente local 2.PNG" alt="Cuevas Automóviles Trinidad - fachada">
       </div>
       <div class="side-photo">
-        <img src="src/foto local interior.PNG" alt="Interior del local Cuevas Automóviles">
+        <img src="/images/foto local interior.PNG" alt="Interior del local Cuevas Automóviles">
       </div>
     </div>
 
@@ -397,60 +359,10 @@
       </div>
       <div class="cta-actions animate-on-scroll delay-1">
         <a href="https://wa.me/59899364330?text=Hola!%20Busco%20un%20veh%C3%ADculo%20de%20una%20marca%20espec%C3%ADfica" target="_blank" class="btn btn-primary btn-lg"><i class="ph ph-whatsapp-logo"></i> Consultar por WhatsApp</a>
-        <a href="catalogo.html" class="btn btn-outline btn-lg"><i class="ph ph-car"></i> Ver catálogo</a>
+        <a href="/catalogo" class="btn btn-outline btn-lg"><i class="ph ph-car"></i> Ver catálogo</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-top">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <img src="src/logo cuevas.png" alt="Cuevas Automóviles Logo" class="footer-logo" style="height:60px;filter:brightness(0) invert(1);margin-bottom:20px">
-          <p class="desc">Más de 36 años en Trinidad, Flores. Autos JAC, Mitsubishi, Chery y Fiat · Bicicletas Trek y Trink · Náutica Honda y Mercury · Lavadero · Financiación bancaria.</p>
-        </div>
-        <div class="footer-col"><h4>Marcas</h4><ul>
-          <li><a href="#" onclick="return false">JAC Motors</a></li>
-          <li><a href="#" onclick="return false">Mitsubishi</a></li>
-          <li><a href="#" onclick="return false">Chery</a></li>
-          <li><a href="#" onclick="return false">Fiat</a></li>
-          <li><a href="#" onclick="return false">Trek / Trink</a></li>
-          <li><a href="#" onclick="return false">Honda / Mercury</a></li>
-        </ul></div>
-        <div class="footer-col"><h4>Navegación</h4><ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="catalogo.html">Catálogo</a></li>
-          <li><a href="servicios.html">Servicios</a></li>
-          <li><a href="nosotros.html">Nosotros</a></li>
-          <li><a href="contacto.html">Contacto</a></li>
-        </ul></div>
-        <div class="footer-col"><h4>Contacto</h4><ul>
-          <li><a href="tel:+59846343775"><i class="ph ph-phone"></i> 4634 3775</a></li>
-          <li><a href="https://wa.me/59899364330"><i class="ph ph-whatsapp-logo"></i> 099 364 330</a></li>
-          <li><a href="contacto.html"><i class="ph ph-map-pin"></i> Inés Duran 1181, Trinidad</a></li>
-          <li style="color:rgba(255,255,255,.4);font-size:.82rem">Lun–Vie: 8:30–18:30<br>Sáb: 9:00–13:00</li>
-        </ul></div>
-      </div>
-    </div>
-  </div>
-  <div class="container">
-    <div class="footer-bottom">
-      <p class="footer-copy">© 2026 Cuevas Automóviles – Eduardo Benicio Cuevas Ferrari. Todos los derechos reservados.</p>
-    </div>
-  </div>
-</footer>
-
-<div class="whatsapp-float">
-  <div class="whatsapp-tooltip">¡Consultanos!</div>
-  <a href="https://wa.me/59899364330?text=Hola!%20Vengo%20desde%20la%20web%20de%20Cuevas%20y%20quisiera%20consultar" target="_blank" class="whatsapp-bubble">
-    <div class="whatsapp-pulse"></div>
-    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
-  </a>
-</div>
-
-<script src="js/main.js"></script>
-</body>
-</html>
+</Layout>
