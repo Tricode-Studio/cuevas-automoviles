@@ -325,7 +325,10 @@ const legacyCatalogApiUrl = import.meta.env.PUBLIC_CATALOG_API_URL || '';
         .replace(/'/g, '&#39;');
 
     try {
-      const { brands, brandCards } = await window.CuevasInventoryApi.fetchInventory();
+      const hasFetchBrands = typeof window.CuevasInventoryApi.fetchBrands === 'function';
+      const { brands, brandCards } = hasFetchBrands
+        ? await window.CuevasInventoryApi.fetchBrands()
+        : await window.CuevasInventoryApi.fetchInventory();
       const normalizedCards = Array.isArray(brandCards) && brandCards.length
         ? brandCards
         : (Array.isArray(brands) ? brands : []).map((name) => ({ name, image: '' }));

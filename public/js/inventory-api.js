@@ -27,6 +27,13 @@
     'autos',
     'cars',
   ];
+  const CACHE_PREFIX = 'cuevas:inventory-cache:v1';
+  const CACHE_TTL_MS = {
+    inventory: 60 * 1000,
+    brands: 5 * 60 * 1000,
+  };
+  const cacheMemory = new Map();
+  const inflightRequests = new Map();
 
   function cleanText(value) {
     if (value === null || value === undefined) return '';
@@ -160,6 +167,82 @@
         global.CUEVAS_CMS_VEHICLES_SLUG
     );
     return { apiBaseUrl, tenantSlug, preferredVehiclesSlug };
+  }
+
+  function getCacheStorage() {
+    try {
+      return global.sessionStorage || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function buildCacheKey(scope, config) {
+    const baseToken = normalizeToken(cleanText(config.apiBaseUrl));
+    const tenantToken = normalizeToken(cleanText(config.tenantSlug));
+    const vehicleToken = normalizeToken(cleanText(config.preferredVehiclesSlug || ''));
+    return `${CACHE_PREFIX}:${scope}:${baseToken}:${tenantToken}:${vehicleToken}`;
+  }
+
+  function getCachedPayload(cacheKey, maxAgeMs) {
+    const now = Date.now();
+    const inMemory = cacheMemory.get(cacheKey);
+    if (inMemory && now - inMemory.ts <= maxAgeMs) {
+      return inMemory.data;
+    }
+
+    const storage = getCacheStorage();
+    if (!storage) return null;
+    try {
+      const raw = storage.getItem(cacheKey);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      if (typeof parsed.ts !== 'number' || !('data' in parsed)) return null;
+      if (now - parsed.ts > maxAgeMs) return null;
+      cacheMemory.set(cacheKey, { ts: parsed.ts, data: parsed.data });
+      return parsed.data;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function getStaleCachedPayload(cacheKey) {
+    const inMemory = cacheMemory.get(cacheKey);
+    if (inMemory) return inMemory.data;
+    const storage = getCacheStorage();
+    if (!storage) return null;
+    try {
+      const raw = storage.getItem(cacheKey);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' && 'data' in parsed ? parsed.data : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function setCachedPayload(cacheKey, data) {
+    const payload = { ts: Date.now(), data };
+    cacheMemory.set(cacheKey, payload);
+    const storage = getCacheStorage();
+    if (!storage) return;
+    try {
+      storage.setItem(cacheKey, JSON.stringify(payload));
+    } catch (error) {
+      // Ignore quota and serialization errors.
+    }
+  }
+
+  function runWithInflight(cacheKey, producer) {
+    if (inflightRequests.has(cacheKey)) {
+      return inflightRequests.get(cacheKey);
+    }
+    const promise = Promise.resolve()
+      .then(producer)
+      .finally(() => inflightRequests.delete(cacheKey));
+    inflightRequests.set(cacheKey, promise);
+    return promise;
   }
 
   function buildCmsPublicBase(apiBaseUrl, tenantSlug) {
@@ -550,20 +633,82 @@
     return { vehicles, brands, brandCards, inventoryUrl, manifest: null };
   }
 
+  async function fetchBrandsFromCms(config) {
+    const publicBase = buildCmsPublicBase(config.apiBaseUrl, config.tenantSlug);
+    const brandsPublicUrl = `${publicBase}/brands?limit=48`;
+
+    try {
+      const brandsPayload = await fetchJson(brandsPublicUrl);
+      const brandCards = normalizeBrandCardsFromPayload(brandsPayload);
+      const brands = brandCards.map((card) => card.name);
+      return { brands, brandCards, manifest: null };
+    } catch (error) {
+      const fallbackInventory = await fetchInventoryFromCms(config);
+      return {
+        brands: fallbackInventory.brands,
+        brandCards: fallbackInventory.brandCards,
+        manifest: fallbackInventory.manifest,
+      };
+    }
+  }
+
+  async function fetchBrands(options) {
+    const config = resolveConfig(options);
+    const cacheKey = buildCacheKey('brands', config);
+    const cached = getCachedPayload(cacheKey, CACHE_TTL_MS.brands);
+    if (cached) return cached;
+
+    return runWithInflight(cacheKey, async () => {
+      try {
+        const isCmsMode =
+          /\/api\/v1(\/|$)/i.test(config.apiBaseUrl) ||
+          /\/public\/[^/]+/i.test(config.apiBaseUrl);
+        const payload = isCmsMode
+          ? await fetchBrandsFromCms(config)
+          : await fetchInventoryFromLegacy(config.apiBaseUrl);
+        const normalized = {
+          brands: Array.isArray(payload.brands) ? payload.brands : [],
+          brandCards: Array.isArray(payload.brandCards) ? payload.brandCards : [],
+          manifest: payload.manifest || null,
+        };
+        setCachedPayload(cacheKey, normalized);
+        return normalized;
+      } catch (error) {
+        const stale = getStaleCachedPayload(cacheKey);
+        if (stale) return stale;
+        throw error;
+      }
+    });
+  }
+
   async function fetchInventory(options) {
     const config = resolveConfig(options);
-    const isCmsMode =
-      /\/api\/v1(\/|$)/i.test(config.apiBaseUrl) ||
-      /\/public\/[^/]+/i.test(config.apiBaseUrl);
+    const cacheKey = buildCacheKey('inventory', config);
+    const cached = getCachedPayload(cacheKey, CACHE_TTL_MS.inventory);
+    if (cached) return cached;
 
-    if (isCmsMode) {
-      return fetchInventoryFromCms(config);
-    }
-    return fetchInventoryFromLegacy(config.apiBaseUrl);
+    return runWithInflight(cacheKey, async () => {
+      try {
+        const isCmsMode =
+          /\/api\/v1(\/|$)/i.test(config.apiBaseUrl) ||
+          /\/public\/[^/]+/i.test(config.apiBaseUrl);
+
+        const payload = isCmsMode
+          ? await fetchInventoryFromCms(config)
+          : await fetchInventoryFromLegacy(config.apiBaseUrl);
+        setCachedPayload(cacheKey, payload);
+        return payload;
+      } catch (error) {
+        const stale = getStaleCachedPayload(cacheKey);
+        if (stale) return stale;
+        throw error;
+      }
+    });
   }
 
   global.CuevasInventoryApi = {
     fetchInventory,
+    fetchBrands,
     resolveConfig,
     buildCmsPublicBase,
   };

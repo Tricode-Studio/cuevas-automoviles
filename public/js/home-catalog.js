@@ -100,11 +100,31 @@
       return;
     }
 
+    const canFetchBrands = typeof window.CuevasInventoryApi.fetchBrands === 'function';
+
     try {
-      const { vehicles, brands } = await window.CuevasInventoryApi.fetchInventory();
+      const brandsPromise = canFetchBrands
+        ? window.CuevasInventoryApi.fetchBrands()
+        : window.CuevasInventoryApi.fetchInventory();
+      const inventoryPromise = window.CuevasInventoryApi.fetchInventory();
+
+      let brands = [];
+      try {
+        const brandsPayload = await brandsPromise;
+        brands = Array.isArray(brandsPayload?.brands) ? brandsPayload.brands : [];
+        renderBrands(brands);
+        updateBrandCounter(brands.length);
+      } catch (brandsError) {
+        renderBrands([]);
+      }
+
+      const { vehicles, brands: inventoryBrands } = await inventoryPromise;
       renderFeaturedVehicles(pickFeatured(vehicles));
-      renderBrands(brands);
-      updateBrandCounter(brands.length);
+      if (!brands.length) {
+        const fallbackBrands = Array.isArray(inventoryBrands) ? inventoryBrands : [];
+        renderBrands(fallbackBrands);
+        updateBrandCounter(fallbackBrands.length);
+      }
     } catch (error) {
       renderFeaturedVehicles([]);
       renderBrands([]);
