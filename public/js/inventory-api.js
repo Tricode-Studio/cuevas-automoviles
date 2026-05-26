@@ -359,11 +359,13 @@
 
       const name =
         cleanText(pick(data, ['name', 'nombre', 'brand', 'marca'])) ||
+        cleanText(pick(item, ['name', 'nombre', 'brand', 'marca'])) ||
         cleanText(item.title);
       if (!name) continue;
 
       const dataImage = toImageList(
-        pick(data, ['image', 'imagen', 'logo', 'brandImage', 'coverImage', 'featuredImage'])
+        pick(data, ['image', 'imagen', 'logo', 'brandImage', 'coverImage', 'featuredImage']) ||
+          pick(item, ['image', 'imagen', 'logo', 'brandImage', 'coverImage', 'featuredImage'])
       );
       const mediaImage = media
         .map((m) => cleanText(pick(m.file || m, ['publicUrl', 'url', 'src', 'image'])))
@@ -416,7 +418,8 @@
       manifest
     );
     const brandsSlug = manifest ? pickBrandsContentTypeSlug(manifest) : '';
-    const brandsUrl = brandsSlug
+    const brandsPublicUrl = `${publicBase}/brands?limit=48`;
+    const brandsEntriesUrl = brandsSlug
       ? `${publicBase}/content-types/${encodeURIComponent(brandsSlug)}/entries?limit=48`
       : '';
 
@@ -479,9 +482,20 @@
 
     let brands = [];
     let brandCards = [];
-    if (brandsUrl) {
+    if (brandsPublicUrl) {
       try {
-        const brandsPayload = await fetchJson(brandsUrl);
+        const brandsPayload = await fetchJson(brandsPublicUrl);
+        brandCards = normalizeBrandCardsFromPayload(brandsPayload);
+        brands = brandCards.map((card) => card.name);
+      } catch (error) {
+        brandCards = [];
+        brands = [];
+      }
+    }
+
+    if (!brands.length && brandsEntriesUrl) {
+      try {
+        const brandsPayload = await fetchJson(brandsEntriesUrl);
         brandCards = normalizeBrandCardsFromPayload(brandsPayload);
         brands = brandCards.map((card) => card.name);
       } catch (error) {
