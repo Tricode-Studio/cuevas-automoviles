@@ -22,28 +22,36 @@
       return;
     }
 
-    featuredGrid.innerHTML = vehicles.map((car, index) => `
+    featuredGrid.innerHTML = vehicles.map((car, index) => {
+      const imgs = Array.isArray(car.imgs) && car.imgs.length ? car.imgs : [car.img || FALLBACK_IMAGE];
+      const slides = imgs.map((src, i) => `
+        <img src="${src}" class="gallery-slide${i === 0 ? ' active' : ''}" alt="${car.brand} ${car.model} - foto ${i + 1}" loading="lazy"
+             onerror="this.src='${FALLBACK_IMAGE}'">`).join('');
+      const arrows = imgs.length > 1 ? `
+        <button class="gallery-arrow prev" onclick="galleryNav('${car.id}',-1,event)" aria-label="Foto anterior">&#8249;</button>
+        <button class="gallery-arrow next" onclick="galleryNav('${car.id}',1,event)" aria-label="Foto siguiente">&#8250;</button>
+        <div class="gallery-dots">${imgs.map((_, i) => `<span class="gallery-dot${i === 0 ? ' active' : ''}" onclick="galleryGo('${car.id}',${i},event)"></span>`).join('')}</div>` : '';
+      return `
       <div class="vehicle-card" style="opacity:1;transform:none;animation:fadeInUp .5s ease ${index * 0.12}s both">
         <div class="vehicle-card-img">
-          <img src="${car.img || FALLBACK_IMAGE}" alt="${car.brand} ${car.model}" loading="lazy" onerror="this.src='${FALLBACK_IMAGE}'">
+          <div class="vehicle-card-gallery" data-id="${car.id}">${slides}${arrows}</div>
           ${car.badge ? `<span class="vehicle-card-badge">${car.badge}</span>` : ''}
-          <button class="vehicle-card-favorite" onclick="this.classList.toggle('active');this.textContent=this.classList.contains('active')?'❤️':'🤍'">🤍</button>
         </div>
         <div class="vehicle-card-body">
           <div class="vehicle-card-brand">${car.brand}</div>
           <div class="vehicle-card-name">${car.model} ${car.year || ''}</div>
           <div class="vehicle-card-specs">
-            <div class="spec-item"><i class="ph ph-calendar"></i> ${car.year || '-'}</div>
-            <div class="spec-item"><i class="ph ph-gas-pump"></i> ${car.fuel || '-'}</div>
-            <div class="spec-item"><i class="ph ph-gear"></i> ${car.trans || '-'}</div>
-            <div class="spec-item"><i class="ph ph-road"></i> ${Number(car.km || 0).toLocaleString('es-UY')} km</div>
+            <div class="spec-item"><span class="ic"><i class="ph ph-calendar"></i></span>${car.year || '-'}</div>
+            <div class="spec-item"><span class="ic"><i class="ph ph-gas-pump"></i></span>${car.fuel || '-'}</div>
+            <div class="spec-item"><span class="ic"><i class="ph ph-gear"></i></span>${car.trans || '-'}</div>
+            <div class="spec-item"><span class="ic"><i class="ph ph-road"></i></span>${Number(car.km || 0).toLocaleString('es-UY')} km</div>
           </div>
           <div class="vehicle-card-footer">
             <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesa%20el%20${encodeURIComponent(car.brand + ' ' + car.model + ' ' + car.year)}" target="_blank" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Consultar precio</a>
           </div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
   function renderBrands(brands) {
