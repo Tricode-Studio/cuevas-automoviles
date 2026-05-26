@@ -40,11 +40,46 @@ if (hamburger && mobileNav) {
 }
 
 // ── SCROLL ANIMATIONS ─────────────────────────────────────────
-const animateEls = document.querySelectorAll('.animate-on-scroll');
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-}, { threshold: 0.12 });
-animateEls.forEach(el => io.observe(el));
+const canObserve = typeof window !== 'undefined' && 'IntersectionObserver' in window;
+const io = canObserve
+  ? new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 })
+  : null;
+
+function bindScrollAnimations(root = document) {
+  const scope = root && root.querySelectorAll ? root : document;
+  scope.querySelectorAll('.animate-on-scroll').forEach((el) => {
+    if (el.dataset.animBound === '1') return;
+    el.dataset.animBound = '1';
+    if (io) io.observe(el);
+    else el.classList.add('visible');
+  });
+}
+
+bindScrollAnimations();
+
+if (typeof MutationObserver !== 'undefined' && document.body) {
+  const dynamicObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType !== 1) return;
+        const element = /** @type {Element} */ (node);
+        if (element.matches && element.matches('.animate-on-scroll')) {
+          bindScrollAnimations(element.parentElement || document);
+        } else if (element.querySelectorAll) {
+          bindScrollAnimations(element);
+        }
+      });
+    }
+  });
+  dynamicObserver.observe(document.body, { childList: true, subtree: true });
+}
 
 // ── ACTIVE NAV LINK ───────────────────────────────────────────
 (function setActiveLink() {
