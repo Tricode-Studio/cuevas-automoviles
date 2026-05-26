@@ -316,24 +316,44 @@ const legacyCatalogApiUrl = import.meta.env.PUBLIC_CATALOG_API_URL || '';
   (async function renderVehicleBrands() {
     const grid = document.getElementById('vehicleBrandsGrid');
     if (!grid || !window.CuevasInventoryApi) return;
+    const escapeHtml = (value) =>
+      String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 
     try {
-      const { brands } = await window.CuevasInventoryApi.fetchInventory();
-      if (!brands.length) {
+      const { brands, brandCards } = await window.CuevasInventoryApi.fetchInventory();
+      const normalizedCards = Array.isArray(brandCards) && brandCards.length
+        ? brandCards
+        : (Array.isArray(brands) ? brands : []).map((name) => ({ name, image: '' }));
+
+      if (!normalizedCards.length) {
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">No hay marcas publicadas.</div>';
         return;
       }
 
-      grid.innerHTML = brands.map((brand, index) => `
-        <a href="/catalogo?marca=${encodeURIComponent(brand)}" class="logo-card animate-on-scroll delay-${index % 4}">
+      grid.innerHTML = normalizedCards.map((brand, index) => {
+        const safeName = escapeHtml(brand?.name || '');
+        const safeImage = brand?.image ? escapeHtml(brand.image) : '';
+        return `
+        <a href="/catalogo?marca=${encodeURIComponent(brand.name)}" class="logo-card animate-on-scroll delay-${index % 4}">
           <div class="logo-img-wrap">
-            <span style="font-size:3rem"><i class="ph ph-car"></i></span>
+            ${
+              safeImage
+                ? `<img src="${safeImage}" alt="${safeName} logo" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`
+                : ''
+            }
+            <span class="logo-text" style="${safeImage ? 'display:none;' : ''}">${safeName}</span>
           </div>
-          <h3>${brand}</h3>
-          <p>Explorá los vehículos disponibles de ${brand} en nuestro catálogo actualizado.</p>
-          <span class="card-link">Ver vehículos ${brand} →</span>
+          <h3>${safeName}</h3>
+          <p>Explorá los vehículos disponibles de ${safeName} en nuestro catálogo actualizado.</p>
+          <span class="card-link">Ver vehículos ${safeName} →</span>
         </a>
-      `).join('');
+      `;
+      }).join('');
     } catch (error) {
       grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">No se pudieron cargar las marcas desde el VPS.</div>';
       console.error('[Marcas] Error cargando marcas:', error);

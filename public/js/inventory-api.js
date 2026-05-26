@@ -310,6 +310,47 @@
     ).sort((a, b) => a.localeCompare(b, 'es'));
   }
 
+  function normalizeBrandCardsFromPayload(payload) {
+    const items = Array.isArray(payload?.items) ? payload.items : extractInventoryArray(payload);
+    const cards = [];
+
+    for (const item of items) {
+      if (!item || typeof item !== 'object') continue;
+      const data = item.data && typeof item.data === 'object' ? item.data : item;
+      const media = Array.isArray(item.media) ? item.media : [];
+
+      const name =
+        cleanText(pick(data, ['name', 'nombre', 'brand', 'marca'])) ||
+        cleanText(item.title);
+      if (!name) continue;
+
+      const dataImage = toImageList(
+        pick(data, ['image', 'imagen', 'logo', 'brandImage', 'coverImage', 'featuredImage'])
+      );
+      const mediaImage = media
+        .map((m) => cleanText(pick(m.file || m, ['publicUrl', 'url', 'src', 'image'])))
+        .filter(Boolean);
+      const images = Array.from(new Set([...dataImage, ...mediaImage])).filter(Boolean);
+
+      cards.push({
+        name,
+        image: images[0] || '',
+      });
+    }
+
+    const byName = new Map();
+    for (const card of cards) {
+      const key = normalizeToken(card.name);
+      if (!byName.has(key)) {
+        byName.set(key, card);
+      } else if (!byName.get(key).image && card.image) {
+        byName.set(key, card);
+      }
+    }
+
+    return Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  }
+
   async function fetchJson(url) {
     const response = await fetch(url, {
       method: 'GET',
@@ -399,24 +440,36 @@
     }
 
     let brands = [];
+    let brandCards = [];
     if (brandsUrl) {
       try {
         const brandsPayload = await fetchJson(brandsUrl);
-        brands = normalizeBrandsFromPayload(brandsPayload);
+        brandCards = normalizeBrandCardsFromPayload(brandsPayload);
+        brands = brandCards.map((card) => card.name);
       } catch (error) {
+        brandCards = [];
         brands = [];
       }
     }
 
     if (!brands.length) {
-      brands = Array.from(new Set(vehicles.map((vehicle) => vehicle.brand))).sort((a, b) =>
-        a.localeCompare(b, 'es')
-      );
+      const byBrand = new Map();
+      for (const vehicle of vehicles) {
+        const name = cleanText(vehicle.brand);
+        if (!name) continue;
+        const key = normalizeToken(name);
+        if (!byBrand.has(key)) {
+          byBrand.set(key, { name, image: cleanText(vehicle.img || '') });
+        }
+      }
+      brandCards = Array.from(byBrand.values()).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+      brands = brandCards.map((card) => card.name);
     }
 
     return {
       vehicles,
       brands,
+      brandCards,
       inventoryUrl: vehiclesUrl,
       manifest,
     };
@@ -435,7 +488,14 @@
     const brands = Array.from(new Set(vehicles.map((vehicle) => vehicle.brand))).sort((a, b) =>
       a.localeCompare(b, 'es')
     );
-    return { vehicles, brands, inventoryUrl, manifest: null };
+    const brandCards = brands.map((name) => {
+      const firstVehicle = vehicles.find((vehicle) => normalizeToken(vehicle.brand) === normalizeToken(name));
+      return {
+        name,
+        image: cleanText(firstVehicle?.img || ''),
+      };
+    });
+    return { vehicles, brands, brandCards, inventoryUrl, manifest: null };
   }
 
   async function fetchInventory(options) {
