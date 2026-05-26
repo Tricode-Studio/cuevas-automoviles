@@ -305,11 +305,11 @@ const legacyCatalogApiUrl = import.meta.env.PUBLIC_CATALOG_API_URL || '';
   </div>
 </section>
 
-<script is:inline>
-  window.__CUEVAS_CMS_API_BASE__ = {JSON.stringify(cmsApiBaseUrl)};
-  window.__CUEVAS_TENANT_SLUG__ = {JSON.stringify(tenantSlug)};
-  window.__CUEVAS_CMS_VEHICLES_SLUG__ = {JSON.stringify(vehiclesSlug)};
-  window.__CUEVAS_CATALOG_API_URL__ = {JSON.stringify(legacyCatalogApiUrl)};
+<script define:vars={{ cmsApiBaseUrl, tenantSlug, vehiclesSlug, legacyCatalogApiUrl }}>
+  window.__CUEVAS_CMS_API_BASE__ = cmsApiBaseUrl;
+  window.__CUEVAS_TENANT_SLUG__ = tenantSlug;
+  window.__CUEVAS_CMS_VEHICLES_SLUG__ = vehiclesSlug;
+  window.__CUEVAS_CATALOG_API_URL__ = legacyCatalogApiUrl;
 </script>
 <script src="/js/inventory-api.js" is:inline></script>
 <script is:inline>

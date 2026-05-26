@@ -107,6 +107,10 @@
 
   function resolveConfig(options) {
     const opts = options || {};
+    const queryTenantSlug =
+      global.location && global.location.search
+        ? cleanText(new URLSearchParams(global.location.search).get('tenant'))
+        : '';
     const apiBaseUrl = cleanText(
       opts.cmsApiBaseUrl ||
         global.__CUEVAS_CMS_API_BASE__ ||
@@ -116,6 +120,7 @@
     );
     const tenantSlug = cleanText(
       opts.tenantSlug ||
+        queryTenantSlug ||
         global.__CUEVAS_TENANT_SLUG__ ||
         global.CUEVAS_TENANT_SLUG ||
         DEFAULT_TENANT_SLUG
@@ -283,7 +288,11 @@
       candidates.push(cleanText(preferredSlug));
     }
     if (manifest) {
-      candidates.push(...pickVehiclesContentTypeSlugs(manifest, preferredSlug));
+      const manifestCandidates = pickVehiclesContentTypeSlugs(manifest, preferredSlug);
+      if (manifestCandidates.length > 0) {
+        candidates.push(...manifestCandidates);
+        return Array.from(new Set(candidates.filter(Boolean)));
+      }
     }
     candidates.push(...DEFAULT_VEHICLES_SLUG_CANDIDATES);
     return Array.from(new Set(candidates.filter(Boolean)));
