@@ -155,12 +155,20 @@ function renderGrid() {
     return;
   }
 
-  catalogGrid.innerHTML = pageData.map(c => `
+  catalogGrid.innerHTML = pageData.map(c => {
+    const imgs = Array.isArray(c.imgs) && c.imgs.length ? c.imgs : [c.img];
+    const slides = imgs.map((src, i) => `
+      <img src="${src}" class="gallery-slide${i===0?' active':''}" alt="${c.brand} ${c.model} - foto ${i+1}" loading="lazy"
+           onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format'">`).join('');
+    const arrows = imgs.length > 1 ? `
+      <button class="gallery-arrow prev" onclick="galleryNav(${c.id},-1,event)" aria-label="Foto anterior">&#8249;</button>
+      <button class="gallery-arrow next" onclick="galleryNav(${c.id},1,event)" aria-label="Foto siguiente">&#8250;</button>
+      <div class="gallery-dots">${imgs.map((_,i)=>`<span class="gallery-dot${i===0?' active':''}" onclick="galleryGo(${c.id},${i},event)"></span>`).join('')}</div>` : '';
+    return `
     <div class="vehicle-card animate-on-scroll">
       <div class="vehicle-card-img">
-        <img src="${c.img}&auto=format&fit=crop" alt="${c.brand} ${c.model}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format'">
+        <div class="vehicle-card-gallery" data-id="${c.id}">${slides}${arrows}</div>
         ${c.badge ? `<span class="vehicle-card-badge">${c.badge}</span>` : ''}
-        <button class="vehicle-card-favorite" title="Guardar" onclick="this.classList.toggle('active');this.textContent=this.classList.contains('active')?'❤️':'🤍'">🤍</button>
       </div>
       <div class="vehicle-card-body">
         <div class="vehicle-card-brand">${c.brand}</div>
@@ -179,7 +187,7 @@ function renderGrid() {
         </div>
       </div>
     </div>
-  `).join('');
+  `;}).join('');
 
   // Re-observe new cards
   catalogGrid.querySelectorAll('.animate-on-scroll').forEach((el, i) => {
@@ -233,6 +241,29 @@ if (resetFilters) {
 function debounce(fn, wait) {
   let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
 }
+
+// ── GALLERY NAV ───────────────────────────────────────────────
+window.galleryNav = function(id, dir, e) {
+  e.stopPropagation();
+  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
+  if (!wrap) return;
+  const slides = wrap.querySelectorAll('.gallery-slide');
+  const dots   = wrap.querySelectorAll('.gallery-dot');
+  let cur = [...slides].findIndex(s => s.classList.contains('active'));
+  slides[cur].classList.remove('active');
+  dots[cur]?.classList.remove('active');
+  cur = (cur + dir + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  dots[cur]?.classList.add('active');
+};
+
+window.galleryGo = function(id, idx, e) {
+  e.stopPropagation();
+  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
+  if (!wrap) return;
+  wrap.querySelectorAll('.gallery-slide').forEach((s,i) => s.classList.toggle('active', i===idx));
+  wrap.querySelectorAll('.gallery-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+};
 
 // ── INIT ──────────────────────────────────────────────────────
 // Lee ?marca= ANTES del primer applyFilters(), si no, syncBrandToURL('')
