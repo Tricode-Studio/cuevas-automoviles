@@ -5,6 +5,19 @@
 (function inventoryApiBootstrap(global) {
   const FALLBACK_IMAGE =
     'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format';
+  const BRAND_LOGO_FALLBACKS = {
+    byd: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BYD_Auto_2022_logo.svg/320px-BYD_Auto_2022_logo.svg.png',
+    chevrolet: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Chevrolet-logo.png/320px-Chevrolet-logo.png',
+    ford: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/320px-Ford_logo_flat.svg.png',
+    honda: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Honda_Logo.svg/320px-Honda_Logo.svg.png',
+    kia: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Kia-logo.svg/320px-Kia-logo.svg.png',
+    mitsubishi: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Mitsubishi_logo.svg/320px-Mitsubishi_logo.svg.png',
+    nissan: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Nissan-logo.svg/320px-Nissan-logo.svg.png',
+    peugeot: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Peugeot_new_logo.svg/320px-Peugeot_new_logo.svg.png',
+    renault: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Text.svg/320px-Renault_2021_Text.svg.png',
+    suzuki: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Suzuki_logo_2.svg/320px-Suzuki_logo_2.svg.png',
+    toyota: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carlogo.svg/320px-Toyota_carlogo.svg.png',
+  };
   const DEFAULT_CMS_API_BASE = 'https://cms.tricode.studio/api/v1';
   const DEFAULT_TENANT_SLUG = 'cuevas-automoviles';
   const DEFAULT_VEHICLES_SLUG_CANDIDATES = [
@@ -92,6 +105,15 @@
       return [value];
     }
     if (typeof raw === 'object') {
+      const direct = cleanText(
+        pick(raw, ['publicUrl', 'accessUrl', 'url', 'src', 'image', 'imagen', 'img'])
+      );
+      if (direct) return [direct];
+      const fileNode = raw.file && typeof raw.file === 'object' ? raw.file : null;
+      const nestedFile = cleanText(
+        pick(fileNode || {}, ['publicUrl', 'accessUrl', 'url', 'src', 'image', 'imagen', 'img'])
+      );
+      if (nestedFile) return [nestedFile];
       const nested = pick(raw, [
         'images',
         'imagenes',
@@ -103,6 +125,13 @@
       return toImageList(nested);
     }
     return [];
+  }
+
+  function resolveBrandImage(name, candidateImage) {
+    const image = cleanText(candidateImage);
+    if (image) return image;
+    const token = normalizeToken(name);
+    return BRAND_LOGO_FALLBACKS[token] || '';
   }
 
   function resolveConfig(options) {
@@ -343,7 +372,7 @@
 
       cards.push({
         name,
-        image: images[0] || '',
+        image: resolveBrandImage(name, images[0] || ''),
       });
     }
 
@@ -468,7 +497,7 @@
         if (!name) continue;
         const key = normalizeToken(name);
         if (!byBrand.has(key)) {
-          byBrand.set(key, { name, image: cleanText(vehicle.img || '') });
+          byBrand.set(key, { name, image: resolveBrandImage(name, cleanText(vehicle.img || '')) });
         }
       }
       brandCards = Array.from(byBrand.values()).sort((a, b) => a.name.localeCompare(b.name, 'es'));
