@@ -263,34 +263,6 @@ window.goPage = function goPage(page) {
   document.getElementById('catalogMain')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
-window.galleryNav = function galleryNav(id, dir, event) {
-  event.stopPropagation();
-  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
-  if (!wrap) return;
-
-  const slides = wrap.querySelectorAll('.gallery-slide');
-  const dots = wrap.querySelectorAll('.gallery-dot');
-  if (!slides.length) return;
-
-  let current = Array.from(slides).findIndex((slide) => slide.classList.contains('active'));
-  if (current < 0) current = 0;
-
-  slides[current].classList.remove('active');
-  if (dots[current]) dots[current].classList.remove('active');
-
-  current = (current + dir + slides.length) % slides.length;
-  slides[current].classList.add('active');
-  if (dots[current]) dots[current].classList.add('active');
-};
-
-window.galleryGo = function galleryGo(id, index, event) {
-  event.stopPropagation();
-  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
-  if (!wrap) return;
-
-  wrap.querySelectorAll('.gallery-slide').forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === index));
-  wrap.querySelectorAll('.gallery-dot').forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index));
-};
 
 [filterBrand, filterFuel, filterTrans, filterYearMin, filterYearMax, filterPriceMin, filterPriceMax, filterSort].forEach((el) => {
   el?.addEventListener('change', applyFilters);

@@ -2,6 +2,31 @@
    CUEVAS AUTOMÓVILES — MAIN JAVASCRIPT
    ============================================================ */
 
+// ── GALLERY SLIDER (compartido entre home y catálogo) ─────────
+window.galleryNav = function(id, dir, event) {
+  event.stopPropagation();
+  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
+  if (!wrap) return;
+  const slides = wrap.querySelectorAll('.gallery-slide');
+  const dots   = wrap.querySelectorAll('.gallery-dot');
+  if (!slides.length) return;
+  let cur = Array.from(slides).findIndex(s => s.classList.contains('active'));
+  if (cur < 0) cur = 0;
+  slides[cur].classList.remove('active');
+  if (dots[cur]) dots[cur].classList.remove('active');
+  cur = (cur + dir + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  if (dots[cur]) dots[cur].classList.add('active');
+};
+
+window.galleryGo = function(id, index, event) {
+  event.stopPropagation();
+  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
+  if (!wrap) return;
+  wrap.querySelectorAll('.gallery-slide').forEach((s, i) => s.classList.toggle('active', i === index));
+  wrap.querySelectorAll('.gallery-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+};
+
 // ── NAVBAR SCROLL BEHAVIOR ────────────────────────────────────
 const navbar = document.getElementById('navbar');
 const mobileNav = document.getElementById('mobileNav');
