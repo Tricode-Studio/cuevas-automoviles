@@ -2,59 +2,28 @@
    CUEVAS AUTOMÓVILES — CATALOG JAVASCRIPT
    ============================================================ */
 
-// ── CAR DATA ─────────────────────────────────────────────────
-const cars = [
-  { id:1,  brand:'Toyota',    model:'Corolla',      year:2023, price:28500, km:8500,    fuel:'Nafta',    trans:'Automático', color:'Blanco',  img:'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600', badge:'Nuevo',      featured:true  },
-  { id:2,  brand:'Toyota',    model:'Hilux',        year:2022, price:42000, km:22000,   fuel:'Diesel',   trans:'Manual',     color:'Gris',    img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600', badge:'Destacado',  featured:true  },
-  { id:3,  brand:'Chevrolet', model:'Onix',         year:2023, price:18900, km:5000,    fuel:'Nafta',    trans:'Automático', color:'Negro',   img:'https://images.unsplash.com/photo-1541443131876-3c51e0b8ace7?w=600', badge:'Nuevo',      featured:true  },
-  { id:4,  brand:'Ford',      model:'Ranger',       year:2022, price:39500, km:31000,   fuel:'Diesel',   trans:'Automático', color:'Azul',    img:'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=600', badge:'',           featured:true  },
-  { id:5,  brand:'Volkswagen',model:'Golf',         year:2021, price:22000, km:45000,   fuel:'Nafta',    trans:'Automático', color:'Blanco',  img:'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=600', badge:'',           featured:false },
-  { id:6,  brand:'Renault',   model:'Duster',       year:2023, price:24500, km:12000,   fuel:'Nafta',    trans:'Manual',     color:'Rojo',    img:'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=600', badge:'Nuevo',      featured:false },
-  { id:7,  brand:'Honda',     model:'Civic',        year:2022, price:26000, km:18000,   fuel:'Nafta',    trans:'Automático', color:'Plateado',img:'https://images.unsplash.com/photo-1490902931801-d6f80ca94fe4?w=600', badge:'',           featured:false },
-  { id:8,  brand:'Nissan',    model:'Frontier',     year:2023, price:38000, km:9000,    fuel:'Diesel',   trans:'Manual',     color:'Gris',    img:'https://images.unsplash.com/photo-1561136862-7f3e4f75e490?w=600', badge:'Nuevo',      featured:false },
-  { id:9,  brand:'Peugeot',   model:'208',          year:2022, price:16500, km:28000,   fuel:'Nafta',    trans:'Manual',     color:'Rojo',    img:'https://images.unsplash.com/photo-1619682817481-e994891cd1f5?w=600', badge:'',           featured:false },
-  { id:10, brand:'Fiat',      model:'Pulse',        year:2023, price:21000, km:6500,    fuel:'Nafta',    trans:'Automático', color:'Blanco',  img:'https://images.unsplash.com/photo-1588258147419-34fe60bfc7d7?w=600', badge:'Nuevo',      featured:false },
-  { id:11, brand:'Hyundai',   model:'Tucson',       year:2022, price:33000, km:20000,   fuel:'Nafta',    trans:'Automático', color:'Negro',   img:'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=600', badge:'',           featured:false },
-  { id:12, brand:'Kia',       model:'Sportage',     year:2023, price:36000, km:7800,    fuel:'Nafta',    trans:'Automático', color:'Gris',    img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=600', badge:'Nuevo',      featured:false },
-  { id:13, brand:'Mercedes',  model:'Clase A',      year:2021, price:48000, km:35000,   fuel:'Nafta',    trans:'Automático', color:'Negro',   img:'https://images.unsplash.com/photo-1617531653332-bd46c16f4d68?w=600', badge:'Premium',    featured:false },
-  { id:14, brand:'BMW',       model:'Serie 3',      year:2022, price:62000, km:22000,   fuel:'Nafta',    trans:'Automático', color:'Azul',    img:'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600', badge:'Premium',    featured:false },
-  { id:15, brand:'Chevrolet', model:'Tracker',      year:2023, price:27000, km:4000,    fuel:'Nafta',    trans:'Automático', color:'Blanco',  img:'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600', badge:'Nuevo',      featured:false },
-  { id:16, brand:'Toyota',    model:'SW4',          year:2022, price:55000, km:28000,   fuel:'Diesel',   trans:'Automático', color:'Blanco',  img:'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600', badge:'',           featured:false },
-  { id:17, brand:'Volvo',     model:'XC60',         year:2022, price:58000, km:19000,   fuel:'Nafta',    trans:'Automático', color:'Gris',    img:'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=600', badge:'Premium',    featured:false },
-];
-
-// ── STATE ─────────────────────────────────────────────────────
-let filtered = [...cars];
+let cars = [];
+let filtered = [];
+let catalogBrands = [];
 let currentPage = 1;
 const PER_PAGE = 9;
 
-const filterBrand  = document.getElementById('filterBrand');
-const filterFuel   = document.getElementById('filterFuel');
-const filterTrans  = document.getElementById('filterTrans');
-const filterYearMin= document.getElementById('filterYearMin');
-const filterYearMax= document.getElementById('filterYearMax');
-const filterPriceMin=document.getElementById('filterPriceMin');
-const filterPriceMax=document.getElementById('filterPriceMax');
-const filterSort   = document.getElementById('filterSort');
-const catalogGrid  = document.getElementById('catalogGrid');
+const filterBrand = document.getElementById('filterBrand');
+const filterFuel = document.getElementById('filterFuel');
+const filterTrans = document.getElementById('filterTrans');
+const filterYearMin = document.getElementById('filterYearMin');
+const filterYearMax = document.getElementById('filterYearMax');
+const filterPriceMin = document.getElementById('filterPriceMin');
+const filterPriceMax = document.getElementById('filterPriceMax');
+const filterSort = document.getElementById('filterSort');
+const catalogGrid = document.getElementById('catalogGrid');
 const catalogCount = document.getElementById('catalogCount');
 const paginationEl = document.getElementById('pagination');
 const resetFilters = document.getElementById('resetFilters');
-const searchInput  = document.getElementById('searchInput');
+const searchInput = document.getElementById('searchInput');
 
-// Populate brand options
-if (filterBrand) {
-  const brands = [...new Set(cars.map(c => c.brand))].sort();
-  brands.forEach(b => {
-    const opt = document.createElement('option');
-    opt.value = b; opt.textContent = b;
-    filterBrand.appendChild(opt);
-  });
-}
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format';
 
-// ── URL SYNC ──────────────────────────────────────────────────
-// Equivalente vanilla a setSearchParams() de React Router.
-// Mantiene ?marca= sincronizado con el filtro activo sin recargar la página.
 function syncBrandToURL(brand) {
   const url = new URL(window.location.href);
   if (brand) {
@@ -65,8 +34,6 @@ function syncBrandToURL(brand) {
   history.replaceState({ marca: brand }, '', url);
 }
 
-// ── BRAND BADGE ───────────────────────────────────────────────
-// Muestra/oculta el indicador visual de filtro activo.
 function renderBrandBadge(brand) {
   const badge = document.getElementById('brandFilterBadge');
   if (!badge) return;
@@ -79,52 +46,89 @@ function renderBrandBadge(brand) {
   badge.innerHTML = `
     <span class="bf-label">Mostrando resultados para:</span>
     <span class="bf-name">${brand}</span>
-    <button class="bf-clear" onclick="clearBrandFilter()" aria-label="Quitar filtro de marca">✕ Quitar filtro</button>
+    <button class="bf-clear" onclick="clearBrandFilter()" aria-label="Quitar filtro de marca">Quitar filtro</button>
   `;
 }
 
-// Función pública para quitar el filtro de marca desde el badge.
-window.clearBrandFilter = function () {
-  if (filterBrand) filterBrand.value = '';
-  applyFilters();
-};
+function populateSelectFromData(selectEl, values, emptyLabel) {
+  if (!selectEl) return;
+  const previous = selectEl.value;
+  selectEl.innerHTML = '';
 
-// ── FILTER LOGIC ──────────────────────────────────────────────
+  const emptyOption = document.createElement('option');
+  emptyOption.value = '';
+  emptyOption.textContent = emptyLabel;
+  selectEl.appendChild(emptyOption);
+
+  values.forEach((value) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    selectEl.appendChild(option);
+  });
+
+  if (previous && values.includes(previous)) {
+    selectEl.value = previous;
+  }
+}
+
+function populateFilterOptions() {
+  const brandsFromCars = Array.from(new Set(cars.map((car) => car.brand))).sort((a, b) =>
+    a.localeCompare(b, 'es')
+  );
+  const brands = catalogBrands.length ? catalogBrands : brandsFromCars;
+  const fuels = Array.from(new Set(cars.map((car) => car.fuel).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'));
+  const trans = Array.from(new Set(cars.map((car) => car.trans).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'));
+
+  populateSelectFromData(filterBrand, brands, 'Todas las marcas');
+  populateSelectFromData(filterFuel, fuels, 'Todos');
+  populateSelectFromData(filterTrans, trans, 'Todas');
+}
+
 function applyFilters() {
-  const brand    = filterBrand?.value || '';
-  const fuel     = filterFuel?.value  || '';
-  const trans    = filterTrans?.value || '';
-  const yearMin  = parseInt(filterYearMin?.value)  || 0;
-  const yearMax  = parseInt(filterYearMax?.value)  || 9999;
-  const priceMin = parseInt(filterPriceMin?.value) || 0;
-  const priceMax = parseInt(filterPriceMax?.value) || 9999999;
-  const search   = searchInput?.value.toLowerCase().trim() || '';
-  const sort     = filterSort?.value || 'featured';
+  const brand = filterBrand?.value || '';
+  const fuel = filterFuel?.value || '';
+  const trans = filterTrans?.value || '';
+  const yearMin = parseInt(filterYearMin?.value, 10) || 0;
+  const yearMax = parseInt(filterYearMax?.value, 10) || 9999;
+  const priceMin = parseInt(filterPriceMin?.value, 10) || 0;
+  const priceMax = parseInt(filterPriceMax?.value, 10) || 999999999;
+  const search = searchInput?.value.toLowerCase().trim() || '';
+  const sort = filterSort?.value || 'featured';
 
-  // DEBUG: equivalente a console.log("Marca desde URL:", marca) de React
-  console.log('[Catálogo] Marca activa:', brand || '(todas)');
-  console.log('[Catálogo] Total autos en base:', cars.length);
-
-  filtered = cars.filter(c => {
-    // Bug fix: comparación case-insensitive → "fiat" == "Fiat"
-    if (brand && c.brand.toLowerCase() !== brand.toLowerCase()) return false;
-    if (fuel  && c.fuel  !== fuel)       return false;
-    if (trans && c.trans !== trans)      return false;
-    if (c.year < yearMin || c.year > yearMax)    return false;
-    if (c.price < priceMin || c.price > priceMax)return false;
-    if (search && !`${c.brand} ${c.model} ${c.year}`.toLowerCase().includes(search)) return false;
+  filtered = cars.filter((car) => {
+    if (brand && car.brand.toLowerCase() !== brand.toLowerCase()) return false;
+    if (fuel && car.fuel.toLowerCase() !== fuel.toLowerCase()) return false;
+    if (trans && car.trans.toLowerCase() !== trans.toLowerCase()) return false;
+    if (car.year < yearMin || car.year > yearMax) return false;
+    if (car.price < priceMin || car.price > priceMax) return false;
+    if (search && !`${car.brand} ${car.model} ${car.year}`.toLowerCase().includes(search)) return false;
     return true;
   });
 
-  console.log('[Catálogo] Resultados filtrados:', filtered.length);
-
   switch (sort) {
-    case 'price-asc':  filtered.sort((a,b) => a.price - b.price); break;
-    case 'price-desc': filtered.sort((a,b) => b.price - a.price); break;
-    case 'year-desc':  filtered.sort((a,b) => b.year  - a.year);  break;
-    case 'year-asc':   filtered.sort((a,b) => a.year  - b.year);  break;
-    case 'km-asc':     filtered.sort((a,b) => a.km    - b.km);    break;
-    default: filtered.sort((a,b) => (b.featured?1:0) - (a.featured?1:0)); break;
+    case 'price-asc':
+      filtered.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-desc':
+      filtered.sort((a, b) => b.price - a.price);
+      break;
+    case 'year-desc':
+      filtered.sort((a, b) => b.year - a.year);
+      break;
+    case 'year-asc':
+      filtered.sort((a, b) => a.year - b.year);
+      break;
+    case 'km-asc':
+      filtered.sort((a, b) => a.km - b.km);
+      break;
+    default:
+      filtered.sort((a, b) => {
+        const featuredDiff = Number(Boolean(b.featured)) - Number(Boolean(a.featured));
+        if (featuredDiff !== 0) return featuredDiff;
+        return b.year - a.year;
+      });
+      break;
   }
 
   currentPage = 1;
@@ -134,7 +138,6 @@ function applyFilters() {
   renderPagination();
 }
 
-// ── RENDER CARDS ──────────────────────────────────────────────
 function renderGrid() {
   if (!catalogGrid) return;
 
@@ -151,141 +154,198 @@ function renderGrid() {
         <div class="icon">🔍</div>
         <h3>No se encontraron vehículos</h3>
         <p>Intenta ajustar los filtros de búsqueda</p>
-      </div>`;
+      </div>
+    `;
     return;
   }
 
-  catalogGrid.innerHTML = pageData.map(c => {
-    const imgs = Array.isArray(c.imgs) && c.imgs.length ? c.imgs : [c.img];
-    const slides = imgs.map((src, i) => `
-      <img src="${src}" class="gallery-slide${i===0?' active':''}" alt="${c.brand} ${c.model} - foto ${i+1}" loading="lazy"
-           onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format'">`).join('');
-    const arrows = imgs.length > 1 ? `
-      <button class="gallery-arrow prev" onclick="galleryNav(${c.id},-1,event)" aria-label="Foto anterior">&#8249;</button>
-      <button class="gallery-arrow next" onclick="galleryNav(${c.id},1,event)" aria-label="Foto siguiente">&#8250;</button>
-      <div class="gallery-dots">${imgs.map((_,i)=>`<span class="gallery-dot${i===0?' active':''}" onclick="galleryGo(${c.id},${i},event)"></span>`).join('')}</div>` : '';
-    return `
-    <div class="vehicle-card animate-on-scroll">
-      <div class="vehicle-card-img">
-        <div class="vehicle-card-gallery" data-id="${c.id}">${slides}${arrows}</div>
-        ${c.badge ? `<span class="vehicle-card-badge">${c.badge}</span>` : ''}
-      </div>
-      <div class="vehicle-card-body">
-        <div class="vehicle-card-brand">${c.brand}</div>
-        <div class="vehicle-card-name">${c.model} ${c.year}</div>
-        <div class="vehicle-card-specs">
-          <div class="spec-item"><span class="ic"><i class="ph ph-calendar"></i></span>${c.year}</div>
-          <div class="spec-item"><span class="ic"><i class="ph ph-gas-pump"></i></span>${c.fuel}</div>
-          <div class="spec-item"><span class="ic"><i class="ph ph-gear"></i></span>${c.trans}</div>
-          <div class="spec-item"><span class="ic"><i class="ph ph-road"></i></span>${c.km.toLocaleString('es-UY')} km</div>
-        </div>
-        <div class="vehicle-card-footer">
-          <a href="https://wa.me/59899364330?text=Hola!%20Consulto%20por%20el%20${encodeURIComponent(c.brand+' '+c.model+' '+c.year)}"
-             target="_blank" class="btn btn-primary btn-sm" style="width:100%;justify-content:center" onclick="event.stopPropagation()">
-            Consultar precio
-          </a>
-        </div>
-      </div>
-    </div>
-  `;}).join('');
+  catalogGrid.innerHTML = pageData.map((car) => {
+    const imgs = Array.isArray(car.imgs) && car.imgs.length ? car.imgs : [car.img || FALLBACK_IMAGE];
+    const slides = imgs.map((src, index) => `
+      <img src="${src}" class="gallery-slide${index === 0 ? ' active' : ''}" alt="${car.brand} ${car.model} - foto ${index + 1}" loading="lazy"
+           onerror="this.src='${FALLBACK_IMAGE}'">
+    `).join('');
 
-  // Re-observe new cards
-  catalogGrid.querySelectorAll('.animate-on-scroll').forEach((el, i) => {
-    el.style.transitionDelay = `${i * 0.06}s`;
+    const arrows = imgs.length > 1 ? `
+      <button class="gallery-arrow prev" onclick="galleryNav('${car.id}',-1,event)" aria-label="Foto anterior">&#8249;</button>
+      <button class="gallery-arrow next" onclick="galleryNav('${car.id}',1,event)" aria-label="Foto siguiente">&#8250;</button>
+      <div class="gallery-dots">${imgs.map((_, index) => `<span class="gallery-dot${index === 0 ? ' active' : ''}" onclick="galleryGo('${car.id}',${index},event)"></span>`).join('')}</div>
+    ` : '';
+
+    return `
+      <div class="vehicle-card animate-on-scroll">
+        <div class="vehicle-card-img">
+          <div class="vehicle-card-gallery" data-id="${car.id}">${slides}${arrows}</div>
+          ${car.badge ? `<span class="vehicle-card-badge">${car.badge}</span>` : ''}
+        </div>
+        <div class="vehicle-card-body">
+          <div class="vehicle-card-brand">${car.brand}</div>
+          <div class="vehicle-card-name">${car.model} ${car.year || ''}</div>
+          <div class="vehicle-card-specs">
+            <div class="spec-item"><span class="ic"><i class="ph ph-calendar"></i></span>${car.year || '-'}</div>
+            <div class="spec-item"><span class="ic"><i class="ph ph-gas-pump"></i></span>${car.fuel || '-'}</div>
+            <div class="spec-item"><span class="ic"><i class="ph ph-gear"></i></span>${car.trans || '-'}</div>
+            <div class="spec-item"><span class="ic"><i class="ph ph-road"></i></span>${Number(car.km || 0).toLocaleString('es-UY')} km</div>
+          </div>
+          <div class="vehicle-card-footer">
+            <a href="https://wa.me/59899364330?text=Hola!%20Consulto%20por%20el%20${encodeURIComponent(car.brand + ' ' + car.model + ' ' + car.year)}"
+               target="_blank" class="btn btn-primary btn-sm" style="width:100%;justify-content:center" onclick="event.stopPropagation()">
+              Consultar precio
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  catalogGrid.querySelectorAll('.animate-on-scroll').forEach((el, index) => {
+    el.style.transitionDelay = `${index * 0.06}s`;
     setTimeout(() => el.classList.add('visible'), 50);
   });
 }
 
-// ── PAGINATION ────────────────────────────────────────────────
 function renderPagination() {
   if (!paginationEl) return;
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+  if (totalPages <= 1) {
+    paginationEl.innerHTML = '';
+    return;
+  }
 
-  let html = `<button class="page-btn prev" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Anterior</button>`;
-  for (let i = 1; i <= totalPages; i++) {
+  let html = `<button class="page-btn prev" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Anterior</button>`;
+  for (let i = 1; i <= totalPages; i += 1) {
     if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-      html += `<button class="page-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+      html += `<button class="page-btn${i === currentPage ? ' active' : ''}" onclick="goPage(${i})">${i}</button>`;
     } else if (i === currentPage - 2 || i === currentPage + 2) {
-      html += `<span style="padding:0 4px;color:var(--grey)">…</span>`;
+      html += '<span style="padding:0 4px;color:var(--grey)">…</span>';
     }
   }
-  html += `<button class="page-btn next" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Siguiente →</button>`;
+  html += `<button class="page-btn next" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente →</button>`;
+
   paginationEl.innerHTML = html;
 }
 
-window.goPage = function(p) {
+function renderConnectionError(message) {
+  if (catalogCount) {
+    catalogCount.innerHTML = 'No se pudo cargar el catálogo';
+  }
+  if (catalogGrid) {
+    catalogGrid.innerHTML = `
+      <div class="no-results" style="grid-column:1/-1">
+        <div class="icon">⚠️</div>
+        <h3>Error de conexión con inventario</h3>
+        <p>${message}</p>
+      </div>
+    `;
+  }
+  if (paginationEl) paginationEl.innerHTML = '';
+}
+
+function debounce(fn, wait) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), wait);
+  };
+}
+
+window.clearBrandFilter = function clearBrandFilter() {
+  if (filterBrand) filterBrand.value = '';
+  applyFilters();
+};
+
+window.goPage = function goPage(page) {
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  if (p < 1 || p > totalPages) return;
-  currentPage = p;
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
   renderGrid();
   renderPagination();
   document.getElementById('catalogMain')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
-// ── EVENT LISTENERS ───────────────────────────────────────────
-[filterBrand, filterFuel, filterTrans, filterYearMin, filterYearMax, filterPriceMin, filterPriceMax, filterSort].forEach(el => {
+window.galleryNav = function galleryNav(id, dir, event) {
+  event.stopPropagation();
+  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
+  if (!wrap) return;
+
+  const slides = wrap.querySelectorAll('.gallery-slide');
+  const dots = wrap.querySelectorAll('.gallery-dot');
+  if (!slides.length) return;
+
+  let current = Array.from(slides).findIndex((slide) => slide.classList.contains('active'));
+  if (current < 0) current = 0;
+
+  slides[current].classList.remove('active');
+  if (dots[current]) dots[current].classList.remove('active');
+
+  current = (current + dir + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  if (dots[current]) dots[current].classList.add('active');
+};
+
+window.galleryGo = function galleryGo(id, index, event) {
+  event.stopPropagation();
+  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
+  if (!wrap) return;
+
+  wrap.querySelectorAll('.gallery-slide').forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === index));
+  wrap.querySelectorAll('.gallery-dot').forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index));
+};
+
+[filterBrand, filterFuel, filterTrans, filterYearMin, filterYearMax, filterPriceMin, filterPriceMax, filterSort].forEach((el) => {
   el?.addEventListener('change', applyFilters);
 });
+
 searchInput?.addEventListener('input', debounce(applyFilters, 300));
 
 if (resetFilters) {
   resetFilters.addEventListener('click', () => {
-    [filterBrand, filterFuel, filterTrans, filterSort].forEach(el => { if (el) el.value = ''; });
-    [filterYearMin, filterYearMax, filterPriceMin, filterPriceMax].forEach(el => { if (el) el.value = ''; });
+    [filterBrand, filterFuel, filterTrans, filterSort].forEach((el) => {
+      if (el) el.value = '';
+    });
+    [filterYearMin, filterYearMax, filterPriceMin, filterPriceMax].forEach((el) => {
+      if (el) el.value = '';
+    });
     if (searchInput) searchInput.value = '';
     applyFilters();
   });
 }
 
-function debounce(fn, wait) {
-  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
-}
+async function initCatalog() {
+  if (!catalogGrid) return;
+  const initialBrandFromUrl = new URLSearchParams(window.location.search).get('marca');
 
-// ── GALLERY NAV ───────────────────────────────────────────────
-window.galleryNav = function(id, dir, e) {
-  e.stopPropagation();
-  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
-  if (!wrap) return;
-  const slides = wrap.querySelectorAll('.gallery-slide');
-  const dots   = wrap.querySelectorAll('.gallery-dot');
-  let cur = [...slides].findIndex(s => s.classList.contains('active'));
-  slides[cur].classList.remove('active');
-  dots[cur]?.classList.remove('active');
-  cur = (cur + dir + slides.length) % slides.length;
-  slides[cur].classList.add('active');
-  dots[cur]?.classList.add('active');
-};
-
-window.galleryGo = function(id, idx, e) {
-  e.stopPropagation();
-  const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
-  if (!wrap) return;
-  wrap.querySelectorAll('.gallery-slide').forEach((s,i) => s.classList.toggle('active', i===idx));
-  wrap.querySelectorAll('.gallery-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
-};
-
-// ── INIT ──────────────────────────────────────────────────────
-// Lee ?marca= ANTES del primer applyFilters(), si no, syncBrandToURL('')
-// borra el param de la URL antes de que pueda ser leído.
-if (catalogGrid) {
-  const marcaURL = new URLSearchParams(window.location.search).get('marca');
-  console.log('[Catálogo] Marca desde URL:', marcaURL || '(ninguna)');
-
-  if (marcaURL && filterBrand) {
-    // Buscar option case-insensitive
-    let opt = Array.from(filterBrand.options).find(
-      o => o.value.toLowerCase() === marcaURL.toLowerCase()
-    );
-    // Si la marca no tiene autos (JAC, Mitsubishi…) no existe en el select → agregarla
-    if (!opt) {
-      opt = document.createElement('option');
-      opt.value = marcaURL;
-      opt.textContent = marcaURL;
-      filterBrand.appendChild(opt);
-    }
-    filterBrand.value = opt.value;
+  if (!window.CuevasInventoryApi || typeof window.CuevasInventoryApi.fetchInventory !== 'function') {
+    renderConnectionError('No se encontró el cliente de API en la aplicación.');
+    return;
   }
 
-  applyFilters(); // Ahora filterBrand.value ya está seteado correctamente
+  try {
+    if (catalogCount) catalogCount.textContent = 'Cargando vehículos...';
+    const { vehicles, brands } = await window.CuevasInventoryApi.fetchInventory();
+    cars = vehicles;
+    catalogBrands = Array.isArray(brands) ? brands : [];
+    filtered = [...cars];
+    populateFilterOptions();
+
+    if (initialBrandFromUrl && filterBrand) {
+      let option = Array.from(filterBrand.options).find(
+        (opt) => opt.value.toLowerCase() === initialBrandFromUrl.toLowerCase()
+      );
+      if (!option) {
+        option = document.createElement('option');
+        option.value = initialBrandFromUrl;
+        option.textContent = initialBrandFromUrl;
+        filterBrand.appendChild(option);
+      }
+      filterBrand.value = option.value;
+    }
+
+    applyFilters();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'No fue posible obtener los autos desde el VPS.';
+    renderConnectionError(message);
+  }
 }
+
+initCatalog();

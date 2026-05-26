@@ -1,5 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const cmsApiBaseUrl =
+  import.meta.env.PUBLIC_CMS_API_BASE_URL || 'https://cms.tricode.studio/api/v1';
+const tenantSlug = import.meta.env.PUBLIC_CMS_TENANT_SLUG || 'cuevas-automoviles';
+const vehiclesSlug = import.meta.env.PUBLIC_CMS_VEHICLES_SLUG || '';
+const legacyCatalogApiUrl = import.meta.env.PUBLIC_CATALOG_API_URL || '';
 ---
 <Layout
   title="Cuevas Automóviles | Venta de Autos en Uruguay · Trinidad, Flores"
@@ -103,42 +108,9 @@ import Layout from '../layouts/Layout.astro';
       <p class="section-sub" style="color:rgba(255,255,255,.6)">Concesionario oficial de las mejores marcas. Vehículos nuevos y usados con respaldo de fábrica.</p>
     </div>
     <div class="brands-grid" style="margin-top:48px">
-      <a href="/catalogo?marca=JAC" class="brand-card animate-on-scroll">
-        <span style="font-size:2.5rem"><i class="ph ph-truck"></i></span>
-        <span>JAC</span>
-      </a>
-      <a href="/catalogo?marca=Mitsubishi" class="brand-card animate-on-scroll delay-1">
-        <span style="font-size:2.5rem"><i class="ph ph-car"></i></span>
-        <span>Mitsubishi</span>
-      </a>
-      <a href="/catalogo?marca=Chery" class="brand-card animate-on-scroll delay-2">
-        <span style="font-size:2.5rem"><i class="ph ph-car"></i></span>
-        <span>Chery</span>
-      </a>
-      <a href="/catalogo?marca=Fiat" class="brand-card animate-on-scroll delay-3">
-        <span style="font-size:2.5rem"><i class="ph ph-car"></i></span>
-        <span>Fiat</span>
-      </a>
-      <a href="/catalogo?marca=Volvo" class="brand-card animate-on-scroll delay-1">
-        <span style="font-size:2.5rem"><i class="ph ph-truck"></i></span>
-        <span>Volvo</span>
-      </a>
-      <a href="/marcas" class="brand-card animate-on-scroll delay-2">
-        <span style="font-size:2.5rem"><i class="ph ph-bicycle"></i></span>
-        <span>Trek / Trink</span>
-      </a>
-      <a href="/marcas" class="brand-card animate-on-scroll delay-3">
-        <span style="font-size:2.5rem"><i class="ph ph-anchor"></i></span>
-        <span>Honda / Mercury</span>
-      </a>
-      <a href="/marcas" class="brand-card animate-on-scroll">
-        <span style="font-size:2.5rem"><i class="ph ph-waves"></i></span>
-        <span>Siux Náutica</span>
-      </a>
-      <a href="/marcas" class="brand-card animate-on-scroll delay-1" style="background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.3)">
-        <span style="font-size:2.5rem"><i class="ph ph-plus"></i></span>
-        <span>Ver todo</span>
-      </a>
+      <div id="homeBrandsGrid" style="grid-column:1/-1;color:rgba(255,255,255,.7);text-align:center;padding:20px 0">
+        Cargando marcas...
+      </div>
     </div>
   </div>
 </section>
@@ -259,38 +231,12 @@ import Layout from '../layouts/Layout.astro';
 </section>
 
 <script is:inline>
-// Render featured vehicles on homepage
-const featuredCars = [
-  { brand:'Toyota',    model:'Hilux',  year:2022, price:42000, km:22000, fuel:'Diesel', trans:'Manual',     badge:'Destacado', img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop' },
-  { brand:'Chevrolet', model:'Onix',   year:2023, price:18900, km:5000,  fuel:'Nafta',  trans:'Automático', badge:'Nuevo',     img:'https://images.unsplash.com/photo-1541443131876-3c51e0b8ace7?w=600&auto=format&fit=crop' },
-  { brand:'Toyota',    model:'Corolla',year:2023, price:28500, km:8500,  fuel:'Nafta',  trans:'Automático', badge:'Nuevo',     img:'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&auto=format&fit=crop' },
-  { brand:'Ford',      model:'Ranger', year:2022, price:39500, km:31000, fuel:'Diesel', trans:'Automático', badge:'',          img:'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=600&auto=format&fit=crop' },
-];
-const grid = document.getElementById('featuredGrid');
-if (grid) {
-  grid.innerHTML = featuredCars.map((c,i) => `
-    <div class="vehicle-card" style="opacity:1;transform:none;animation:fadeInUp .5s ease ${i*0.12}s both">
-      <div class="vehicle-card-img">
-        <img src="${c.img}" alt="${c.brand} ${c.model}" loading="lazy">
-        ${c.badge ? `<span class="vehicle-card-badge">${c.badge}</span>` : ''}
-        <button class="vehicle-card-favorite" onclick="this.classList.toggle('active');this.textContent=this.classList.contains('active')?'❤️':'🤍'">🤍</button>
-      </div>
-      <div class="vehicle-card-body">
-        <div class="vehicle-card-brand">${c.brand}</div>
-        <div class="vehicle-card-name">${c.model} ${c.year}</div>
-        <div class="vehicle-card-specs">
-          <div class="spec-item"><i class="ph ph-calendar"></i> ${c.year}</div>
-          <div class="spec-item"><i class="ph ph-gas-pump"></i> ${c.fuel}</div>
-          <div class="spec-item"><i class="ph ph-gear"></i> ${c.trans}</div>
-          <div class="spec-item"><i class="ph ph-road"></i> ${c.km.toLocaleString('es-UY')} km</div>
-        </div>
-        <div class="vehicle-card-footer">
-          <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesa%20el%20${encodeURIComponent(c.brand+' '+c.model+' '+c.year)}" target="_blank" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Consultar precio</a>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
+  window.__CUEVAS_CMS_API_BASE__ = {JSON.stringify(cmsApiBaseUrl)};
+  window.__CUEVAS_TENANT_SLUG__ = {JSON.stringify(tenantSlug)};
+  window.__CUEVAS_CMS_VEHICLES_SLUG__ = {JSON.stringify(vehiclesSlug)};
+  window.__CUEVAS_CATALOG_API_URL__ = {JSON.stringify(legacyCatalogApiUrl)};
 </script>
+<script src="/js/inventory-api.js" is:inline></script>
+<script src="/js/home-catalog.js" is:inline></script>
 
 </Layout>

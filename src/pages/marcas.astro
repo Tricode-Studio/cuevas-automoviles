@@ -1,9 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const cmsApiBaseUrl =
+  import.meta.env.PUBLIC_CMS_API_BASE_URL || 'https://cms.tricode.studio/api/v1';
+const tenantSlug = import.meta.env.PUBLIC_CMS_TENANT_SLUG || 'cuevas-automoviles';
+const vehiclesSlug = import.meta.env.PUBLIC_CMS_VEHICLES_SLUG || '';
+const legacyCatalogApiUrl = import.meta.env.PUBLIC_CATALOG_API_URL || '';
 ---
 <Layout
   title="Marcas | Cuevas Automóviles · Trinidad, Uruguay"
-  description="Marcas oficiales en Cuevas Automóviles Trinidad: JAC, Mitsubishi, Chery, Fiat (autos), Trek y Trink eléctricas (bicicletas), Honda y Mercury (motores náuticos), Siux (embarcaciones). 36 años de trayectoria en Flores, Uruguay."
+  description="Marcas disponibles en Cuevas Automóviles Trinidad: autos, bicicletas y náutica. 36 años de trayectoria en Flores, Uruguay."
   navClass="solid"
   activeLink="marcas"
 >
@@ -162,73 +167,8 @@ import Layout from '../layouts/Layout.astro';
       <h2>Marcas de vehículos nuevos y usados</h2>
     </div>
 
-    <div class="logo-grid">
-
-      <!-- JAC -->
-      <a href="/catalogo?marca=JAC" class="logo-card animate-on-scroll">
-        <div class="logo-img-wrap">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/JAC.svg/300px-JAC.svg.png"
-               alt="JAC Motors logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">JAC</span>
-        </div>
-        <h3>JAC Motors</h3>
-        <p>Vehículos chinos de alta calidad. SUVs, sedanes y utilitarios con tecnología moderna y excelente relación precio-valor.</p>
-        <span class="card-link">Ver vehículos JAC →</span>
-      </a>
-
-      <!-- Mitsubishi -->
-      <a href="/catalogo?marca=Mitsubishi" class="logo-card animate-on-scroll delay-1">
-        <div class="logo-img-wrap">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Mitsubishi_logo.svg/250px-Mitsubishi_logo.svg.png"
-               alt="Mitsubishi Motors logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">◇◇◇</span>
-        </div>
-        <h3>Mitsubishi</h3>
-        <p>Japonesa de renombre mundial. L200, ASX, Eclipse Cross y Outlander. Robustez y tecnología de punta en cada modelo.</p>
-        <span class="card-link">Ver vehículos Mitsubishi →</span>
-      </a>
-
-      <!-- Chery -->
-      <a href="/catalogo?marca=Chery" class="logo-card animate-on-scroll delay-2">
-        <div class="logo-img-wrap">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Chery_logo_2013.svg/250px-Chery_logo_2013.svg.png"
-               alt="Chery logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none;color:#c8102e">CHERY</span>
-        </div>
-        <h3>Chery</h3>
-        <p>Marca china con fuerte presencia en Uruguay. Arrizo y Tiggo con equipamiento completo, garantía y repuestos disponibles.</p>
-        <span class="card-link">Ver vehículos Chery →</span>
-      </a>
-
-      <!-- Fiat -->
-      <a href="/catalogo?marca=Fiat" class="logo-card animate-on-scroll delay-3">
-        <div class="logo-img-wrap">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Logo_fiat_2020.svg/200px-Logo_fiat_2020.svg.png"
-               alt="Fiat logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">FIAT</span>
-        </div>
-        <h3>Fiat</h3>
-        <p>La marca italiana más popular de América del Sur. Pulse, Cronos, Argo y Fastback. Versátil, accesible y muy confiable.</p>
-        <span class="card-link">Ver vehículos Fiat →</span>
-      </a>
-
-      <!-- Volvo -->
-      <a href="/catalogo?marca=Volvo" class="logo-card animate-on-scroll">
-        <div class="logo-img-wrap">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Volvo_logo.svg/250px-Volvo_logo.svg.png"
-               alt="Volvo logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none;color:#003057">VOLVO</span>
-        </div>
-        <h3>Volvo</h3>
-        <p>Seguridad, diseño escandinavo y tecnología de primer nivel. SUVs y sedanes premium con excelente equipamiento de serie.</p>
-        <span class="card-link">Ver vehículos Volvo →</span>
-      </a>
-
+    <div class="logo-grid" id="vehicleBrandsGrid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">Cargando marcas de vehículos...</div>
     </div><!-- /logo-grid autos -->
 
     <!-- ── BICICLETAS ───────────────────────────────────── -->
@@ -364,5 +304,41 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </div>
 </section>
+
+<script is:inline>
+  window.__CUEVAS_CMS_API_BASE__ = {JSON.stringify(cmsApiBaseUrl)};
+  window.__CUEVAS_TENANT_SLUG__ = {JSON.stringify(tenantSlug)};
+  window.__CUEVAS_CMS_VEHICLES_SLUG__ = {JSON.stringify(vehiclesSlug)};
+  window.__CUEVAS_CATALOG_API_URL__ = {JSON.stringify(legacyCatalogApiUrl)};
+</script>
+<script src="/js/inventory-api.js" is:inline></script>
+<script is:inline>
+  (async function renderVehicleBrands() {
+    const grid = document.getElementById('vehicleBrandsGrid');
+    if (!grid || !window.CuevasInventoryApi) return;
+
+    try {
+      const { brands } = await window.CuevasInventoryApi.fetchInventory();
+      if (!brands.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">No hay marcas publicadas.</div>';
+        return;
+      }
+
+      grid.innerHTML = brands.map((brand, index) => `
+        <a href="/catalogo?marca=${encodeURIComponent(brand)}" class="logo-card animate-on-scroll delay-${index % 4}">
+          <div class="logo-img-wrap">
+            <span style="font-size:3rem"><i class="ph ph-car"></i></span>
+          </div>
+          <h3>${brand}</h3>
+          <p>Explorá los vehículos disponibles de ${brand} en nuestro catálogo actualizado.</p>
+          <span class="card-link">Ver vehículos ${brand} →</span>
+        </a>
+      `).join('');
+    } catch (error) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">No se pudieron cargar las marcas desde el VPS.</div>';
+      console.error('[Marcas] Error cargando marcas:', error);
+    }
+  })();
+</script>
 
 </Layout>

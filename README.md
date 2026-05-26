@@ -40,6 +40,34 @@ Además, la plataforma se destaca por integrar múltiples rubros dentro del mism
 
 ---
 
+## Configuración de API (VPS)
+
+El stock de vehículos y marcas se consume desde una API externa.
+
+1. Crear un archivo `.env` a partir de `.env.example`.
+2. Definir la base del CMS y el tenant:
+
+`PUBLIC_CMS_API_BASE_URL=https://cms.tricode.studio/api/v1`
+
+`PUBLIC_CMS_TENANT_SLUG=cuevas-automoviles`
+
+Opcional para forzar el content-type de inventario (por ejemplo `vehicles`):
+
+`PUBLIC_CMS_VEHICLES_SLUG=vehicles`
+
+La web resuelve dinámicamente:
+
+1. `GET /public/:tenantSlug/integration-manifest`
+2. `GET /public/:tenantSlug/content-types/:slug/entries`
+
+Con eso evita hardcodear marcas/autos y usa el content-type real del tenant.
+
+Compatibilidad legacy: opcionalmente podés usar `PUBLIC_CATALOG_API_URL` si tenés una API vieja que expone `/vehicles`.
+
+Si el endpoint público no trae unidades (por ejemplo porque están en `DRAFT`), el cliente intenta automáticamente el endpoint tenant-scoped del CMS para no dejar el catálogo vacío.
+
+---
+
 ## Enfoque del proyecto
 
 Este proyecto está diseñado bajo una lógica moderna de desarrollo web:

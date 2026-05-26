@@ -1,5 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const cmsApiBaseUrl =
+  import.meta.env.PUBLIC_CMS_API_BASE_URL || 'https://cms.tricode.studio/api/v1';
+const tenantSlug = import.meta.env.PUBLIC_CMS_TENANT_SLUG || 'cuevas-automoviles';
+const vehiclesSlug = import.meta.env.PUBLIC_CMS_VEHICLES_SLUG || '';
+const legacyCatalogApiUrl = import.meta.env.PUBLIC_CATALOG_API_URL || '';
 ---
 <Layout
   title="Catálogo de Vehículos | Cuevas Automóviles Uruguay"
@@ -125,6 +130,13 @@ import Layout from '../layouts/Layout.astro';
   </div>
 </div>
 
+<script is:inline>
+  window.__CUEVAS_CMS_API_BASE__ = {JSON.stringify(cmsApiBaseUrl)};
+  window.__CUEVAS_TENANT_SLUG__ = {JSON.stringify(tenantSlug)};
+  window.__CUEVAS_CMS_VEHICLES_SLUG__ = {JSON.stringify(vehiclesSlug)};
+  window.__CUEVAS_CATALOG_API_URL__ = {JSON.stringify(legacyCatalogApiUrl)};
+</script>
+<script src="/js/inventory-api.js" is:inline></script>
 <script src="/js/catalogo.js" is:inline></script>
 
 </Layout>
