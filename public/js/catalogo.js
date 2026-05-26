@@ -163,7 +163,7 @@ function renderGrid() {
     const imgs = Array.isArray(car.imgs) && car.imgs.length ? car.imgs : [car.img || FALLBACK_IMAGE];
     const slides = imgs.map((src, index) => `
       <img src="${src}" class="gallery-slide${index === 0 ? ' active' : ''}" alt="${car.brand} ${car.model} - foto ${index + 1}" loading="lazy"
-           onerror="this.src='${FALLBACK_IMAGE}'">
+           onerror="this.src='${FALLBACK_IMAGE}'" onclick="openLightboxFromGallery('${car.id}',${index},event)">
     `).join('');
 
     const arrows = imgs.length > 1 ? `

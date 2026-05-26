@@ -26,7 +26,7 @@
       const imgs = Array.isArray(car.imgs) && car.imgs.length ? car.imgs : [car.img || FALLBACK_IMAGE];
       const slides = imgs.map((src, i) => `
         <img src="${src}" class="gallery-slide${i === 0 ? ' active' : ''}" alt="${car.brand} ${car.model} - foto ${i + 1}" loading="lazy"
-             onerror="this.src='${FALLBACK_IMAGE}'">`).join('');
+             onerror="this.src='${FALLBACK_IMAGE}'" onclick="openLightboxFromGallery('${car.id}',${i},event)">`).join('');
       const arrows = imgs.length > 1 ? `
         <button class="gallery-arrow prev" onclick="galleryNav('${car.id}',-1,event)" aria-label="Foto anterior">&#8249;</button>
         <button class="gallery-arrow next" onclick="galleryNav('${car.id}',1,event)" aria-label="Foto siguiente">&#8250;</button>

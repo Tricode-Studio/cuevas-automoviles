@@ -139,13 +139,105 @@ if (counterEls.length) {
   counterEls.forEach(el => counterIO.observe(el));
 }
 
-// ── FAVORITE TOGGLE ───────────────────────────────────────────
-document.querySelectorAll('.vehicle-card-favorite').forEach(btn => {
-  btn.addEventListener('click', () => {
-    btn.classList.toggle('active');
-    btn.textContent = btn.classList.contains('active') ? '❤️' : '🤍';
+// ── LIGHTBOX ──────────────────────────────────────────────────
+(function() {
+  let lbImgs = [], lbIndex = 0, lbScale = 1;
+  let lbDragging = false, lbDragStart = { x: 0, y: 0 }, lbTranslate = { x: 0, y: 0 };
+
+  const lb = document.createElement('div');
+  lb.id = 'lightbox';
+  lb.className = 'lightbox';
+  lb.innerHTML = `
+    <button class="lb-close" aria-label="Cerrar">&#10005;</button>
+    <button class="lb-prev" aria-label="Anterior">&#8249;</button>
+    <button class="lb-next" aria-label="Siguiente">&#8250;</button>
+    <div class="lb-img-wrap"><img id="lb-img" src="" alt="Foto del vehículo"></div>
+    <div class="lb-counter"></div>`;
+  document.body.appendChild(lb);
+
+  const lbImg = document.getElementById('lb-img');
+  const lbCounter = lb.querySelector('.lb-counter');
+
+  function applyTransform() {
+    lbImg.style.transform = `translate(${lbTranslate.x}px,${lbTranslate.y}px) scale(${lbScale})`;
+  }
+  function resetZoom() {
+    lbScale = 1; lbTranslate = { x: 0, y: 0 };
+    applyTransform();
+    lbImg.style.cursor = 'zoom-in';
+  }
+  function showImage(index) {
+    lbIndex = (index + lbImgs.length) % lbImgs.length;
+    lbImg.src = lbImgs[lbIndex];
+    resetZoom();
+    lbCounter.textContent = lbImgs.length > 1 ? `${lbIndex + 1} / ${lbImgs.length}` : '';
+    lb.querySelector('.lb-prev').style.display = lbImgs.length > 1 ? '' : 'none';
+    lb.querySelector('.lb-next').style.display = lbImgs.length > 1 ? '' : 'none';
+  }
+
+  window.openLightboxFromGallery = function(id, startIndex, event) {
+    event.stopPropagation();
+    const wrap = document.querySelector(`.vehicle-card-gallery[data-id="${id}"]`);
+    if (!wrap) return;
+    lbImgs = Array.from(wrap.querySelectorAll('.gallery-slide')).map(img => img.src);
+    showImage(startIndex);
+    lb.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  function closeLightbox() {
+    lb.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  lb.querySelector('.lb-close').addEventListener('click', closeLightbox);
+  lb.querySelector('.lb-prev').addEventListener('click', e => { e.stopPropagation(); showImage(lbIndex - 1); });
+  lb.querySelector('.lb-next').addEventListener('click', e => { e.stopPropagation(); showImage(lbIndex + 1); });
+  lb.addEventListener('click', e => {
+    if (e.target === lb || e.target.classList.contains('lb-img-wrap')) {
+      lbScale > 1 ? resetZoom() : closeLightbox();
+    }
   });
-});
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showImage(lbIndex - 1);
+    if (e.key === 'ArrowRight') showImage(lbIndex + 1);
+  });
+
+  // Zoom click
+  lbImg.addEventListener('click', e => {
+    e.stopPropagation();
+    if (lbScale > 1) { resetZoom(); return; }
+    lbScale = 2.5; applyTransform();
+    lbImg.style.cursor = 'grab';
+  });
+  // Scroll zoom
+  lb.querySelector('.lb-img-wrap').addEventListener('wheel', e => {
+    e.preventDefault();
+    lbScale = Math.min(4, Math.max(1, lbScale - e.deltaY * 0.003));
+    applyTransform();
+    lbImg.style.cursor = lbScale > 1 ? 'grab' : 'zoom-in';
+  }, { passive: false });
+  // Drag to pan
+  lbImg.addEventListener('mousedown', e => {
+    if (lbScale <= 1) return;
+    lbDragging = true;
+    lbDragStart = { x: e.clientX - lbTranslate.x, y: e.clientY - lbTranslate.y };
+    lbImg.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!lbDragging) return;
+    lbTranslate = { x: e.clientX - lbDragStart.x, y: e.clientY - lbDragStart.y };
+    applyTransform();
+  });
+  document.addEventListener('mouseup', () => {
+    if (!lbDragging) return;
+    lbDragging = false;
+    lbImg.style.cursor = lbScale > 1 ? 'grab' : 'zoom-in';
+  });
+})();
 
 // ── CONTACT FORM ──────────────────────────────────────────────
 const contactForm = document.getElementById('contactForm');
