@@ -54,26 +54,31 @@
     }).join('');
   }
 
-  function renderBrands(brands) {
+  function renderBrands(brandCards) {
     if (!brandsGrid) return;
-    if (!brands.length) {
+    if (!brandCards.length) {
       brandsGrid.innerHTML = '<div style="grid-column:1/-1;color:rgba(255,255,255,.7);text-align:center;padding:20px 0">Sin marcas disponibles</div>';
       return;
     }
 
-    const brandCards = brands.slice(0, 8).map((brand, index) => `
-      <a href="/catalogo?marca=${encodeURIComponent(brand)}" class="brand-card animate-on-scroll delay-${index % 4}">
-        <span style="font-size:2.5rem"><i class="ph ph-car"></i></span>
-        <span>${brand}</span>
-      </a>
-    `).join('');
+    const cards = brandCards.slice(0, 8).map((brand, index) => {
+      const logoContent = brand.image
+        ? `<img src="${brand.image}" alt="${brand.name} logo" loading="lazy"
+               style="max-width:110px;max-height:60px;width:auto;height:auto;object-fit:contain;filter:brightness(0) invert(1);opacity:.85;transition:opacity .2s"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+           <span style="display:none;font-size:1rem;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.85)">${brand.name}</span>`
+        : `<span style="font-size:1rem;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.85)">${brand.name}</span>`;
+      return `
+        <a href="/catalogo?marca=${encodeURIComponent(brand.name)}" class="brand-card animate-on-scroll delay-${index % 4}">
+          ${logoContent}
+        </a>`;
+    }).join('');
 
-    brandsGrid.innerHTML = `${brandCards}
+    brandsGrid.innerHTML = `${cards}
       <a href="/catalogo" class="brand-card animate-on-scroll" style="background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.3)">
-        <span style="font-size:2.5rem"><i class="ph ph-plus"></i></span>
-        <span>Ver todo</span>
-      </a>
-    `;
+        <span style="font-size:2rem"><i class="ph ph-arrow-right"></i></span>
+        <span style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7)">Ver todo</span>
+      </a>`;
   }
 
   function pickFeatured(vehicles) {
@@ -116,22 +121,27 @@
         : window.CuevasInventoryApi.fetchInventory();
       const inventoryPromise = window.CuevasInventoryApi.fetchInventory();
 
-      let brands = [];
+      let resolvedBrandCards = [];
       try {
         const brandsPayload = await brandsPromise;
-        brands = Array.isArray(brandsPayload?.brands) ? brandsPayload.brands : [];
-        renderBrands(brands);
-        updateBrandCounter(brands.length);
+        resolvedBrandCards = Array.isArray(brandsPayload?.brandCards) ? brandsPayload.brandCards : [];
+        if (!resolvedBrandCards.length && Array.isArray(brandsPayload?.brands)) {
+          resolvedBrandCards = brandsPayload.brands.map((name) => ({ name, image: '' }));
+        }
+        renderBrands(resolvedBrandCards);
+        updateBrandCounter(resolvedBrandCards.length);
       } catch (brandsError) {
         renderBrands([]);
       }
 
-      const { vehicles, brands: inventoryBrands } = await inventoryPromise;
+      const { vehicles, brandCards: inventoryBrandCards, brands: inventoryBrands } = await inventoryPromise;
       renderFeaturedVehicles(pickFeatured(vehicles));
-      if (!brands.length) {
-        const fallbackBrands = Array.isArray(inventoryBrands) ? inventoryBrands : [];
-        renderBrands(fallbackBrands);
-        updateBrandCounter(fallbackBrands.length);
+      if (!resolvedBrandCards.length) {
+        const fallback = Array.isArray(inventoryBrandCards) && inventoryBrandCards.length
+          ? inventoryBrandCards
+          : (Array.isArray(inventoryBrands) ? inventoryBrands.map((name) => ({ name, image: '' })) : []);
+        renderBrands(fallback);
+        updateBrandCounter(fallback.length);
       }
     } catch (error) {
       renderFeaturedVehicles([]);
