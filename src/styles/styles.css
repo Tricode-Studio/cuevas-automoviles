@@ -640,7 +640,7 @@ a.hero-scroll:hover .scroll-arrow { border-color: rgba(255,255,255,.7); }
 .vehicle-price .amount { font-size: 1.5rem; font-weight: 800; color: var(--black); line-height: 1.1; }
 
 /* ── BRANDS SECTION ───────────────────────────────────────── */
-.brands-section { background: var(--black-mid); }
+.brands-section { background: var(--black-mid); overflow-x: hidden; }
 .brands-section .section-title { color: var(--white); }
 .brands-section .section-sub { color: rgba(255,255,255,.6); }
 .brands-section .section-label { color: var(--blue-light); }
@@ -648,15 +648,16 @@ a.hero-scroll:hover .scroll-arrow { border-color: rgba(255,255,255,.7); }
 
 .brands-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   gap: 16px;
   margin-top: 48px;
+  width: 100%;
 }
-@media (max-width: 768px) {
-  .brands-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 640px) {
+  .brands-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
-@media (max-width: 480px) {
-  .brands-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (max-width: 380px) {
+  .brands-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
 }
 .brand-card {
   background: rgba(255,255,255,.06);
@@ -683,6 +684,79 @@ a.hero-scroll:hover .scroll-arrow { border-color: rgba(255,255,255,.7); }
 .brand-card:hover img { opacity: 1; }
 .brand-card span { font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.65); }
 .brand-card:hover span { color: var(--white); }
+
+/* ── HOME LOGO CARDS (brands section) ────────────────────── */
+.home-logo-card {
+  background: #fff;
+  border: 1.5px solid #eaecf0;
+  border-radius: 16px;
+  padding: 28px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+  text-decoration: none;
+  color: inherit;
+}
+.home-logo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,.15);
+  border-color: var(--blue);
+}
+.home-logo-card .logo-img-wrap {
+  width: 100px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-logo-card .logo-img-wrap img {
+  max-width: 100px;
+  max-height: 55px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.home-logo-card .logo-text-fallback {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -.03em;
+  color: var(--black-mid);
+  line-height: 1;
+}
+.home-logo-card h3 {
+  font-size: .9rem;
+  margin: 0;
+  color: var(--black-mid);
+  font-weight: 700;
+}
+.home-logo-card .card-link {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: .04em;
+  margin-top: auto;
+}
+@media (max-width: 640px) {
+  .home-logo-card {
+    padding: 18px 12px 14px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .home-logo-card .logo-img-wrap {
+    width: 80px;
+    height: 48px;
+  }
+  .home-logo-card .logo-img-wrap img {
+    max-width: 80px;
+    max-height: 42px;
+  }
+  .home-logo-card .logo-text-fallback { font-size: 1.1rem; }
+  .home-logo-card h3 { font-size: .8rem; }
+  .home-logo-card .card-link { font-size: .7rem; letter-spacing: 0; }
+}
 
 /* ── SERVICES SECTION ─────────────────────────────────────── */
 .services-grid {
@@ -1183,7 +1257,8 @@ footer {
 
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,.08);
-  padding: 20px 0;
+  padding: 20px 0 20px 0;
+  padding-right: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1322,7 +1397,6 @@ footer {
   .hero-title { font-size: 2.2rem; }
   .hero-stats { flex-wrap: wrap; gap: 24px; }
   .footer-grid { grid-template-columns: 1fr; }
-  .brands-grid { grid-template-columns: repeat(3, 1fr); }
   .whatsapp-float { bottom: 16px; right: 16px; }
   .vehicles-grid { grid-template-columns: 1fr; }
 }

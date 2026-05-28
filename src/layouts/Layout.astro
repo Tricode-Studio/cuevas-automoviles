@@ -19,8 +19,48 @@ const { title, description = 'Cuevas Automóviles, concesionaria en Trinidad, Ur
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
   <meta name="description" content={description}>
-  <link rel="icon" href="/images/logo solo.PNG" type="image/png">
-  <link rel="apple-touch-icon" href="/images/logo solo.PNG">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/images/logoparagoogle.png" type="image/png">
+  <link rel="shortcut icon" href="/images/logoparagoogle.png" type="image/png">
+  <link rel="apple-touch-icon" href="/images/logoparagoogle.png">
+
+  <!-- Open Graph / Google -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Cuevas Automóviles">
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content="https://cuevaautos.com.uy/images/logoparagoogle.png">
+  <meta property="og:image:alt" content="Cuevas Automóviles - Concesionaria Trinidad, Uruguay">
+  <meta property="og:locale" content="es_UY">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content="https://cuevaautos.com.uy/images/logoparagoogle.png">
+
+  <!-- Schema.org logo para Google -->
+  <script type="application/ld+json" is:inline>
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoDealer",
+    "name": "Cuevas Automóviles",
+    "url": "https://cuevaautos.com.uy",
+    "logo": "https://cuevaautos.com.uy/images/logoparagoogle.png",
+    "image": "https://cuevaautos.com.uy/images/logoparagoogle.png",
+    "description": "Concesionaria oficial en Trinidad, Flores, Uruguay. Más de 36 años vendiendo autos nuevos y usados.",
+    "telephone": "+59846343775",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Inés Duran 1181",
+      "addressLocality": "Trinidad",
+      "addressRegion": "Flores",
+      "addressCountry": "UY"
+    }
+  }
+  </script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
 </head>
 <body>

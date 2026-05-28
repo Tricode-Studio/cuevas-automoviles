@@ -54,6 +54,10 @@
     }).join('');
   }
 
+  function escHtml(val) {
+    return String(val ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
   function renderBrands(brandCards) {
     if (!brandsGrid) return;
     if (!brandCards.length) {
@@ -62,22 +66,32 @@
     }
 
     const cards = brandCards.slice(0, 8).map((brand, index) => {
-      const logoContent = brand.image
-        ? `<img src="${brand.image}" alt="${brand.name} logo" loading="lazy"
-               style="max-width:110px;max-height:60px;width:auto;height:auto;object-fit:contain;filter:brightness(0) invert(1);opacity:.85;transition:opacity .2s"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-           <span style="display:none;font-size:1rem;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.85)">${brand.name}</span>`
-        : `<span style="font-size:1rem;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.85)">${brand.name}</span>`;
+      const safeName = escHtml(brand?.name || '');
+      const safeImg  = brand?.image ? escHtml(brand.image) : '';
+      const logoContent = safeImg
+        ? `<div class="logo-img-wrap">
+             <img src="${safeImg}" alt="${safeName} logo" loading="lazy"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+             <span class="logo-text-fallback" style="display:none">${safeName}</span>
+           </div>`
+        : `<div class="logo-img-wrap">
+             <span class="logo-text-fallback">${safeName}</span>
+           </div>`;
       return `
-        <a href="/catalogo?marca=${encodeURIComponent(brand.name)}" class="brand-card animate-on-scroll delay-${index % 4}">
+        <a href="/catalogo?marca=${encodeURIComponent(brand.name)}" class="home-logo-card animate-on-scroll delay-${index % 4}">
           ${logoContent}
+          <h3>${safeName}</h3>
+          <span class="card-link">Ver vehículos →</span>
         </a>`;
     }).join('');
 
     brandsGrid.innerHTML = `${cards}
-      <a href="/catalogo" class="brand-card animate-on-scroll" style="background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.3)">
-        <span style="font-size:2rem"><i class="ph ph-arrow-right"></i></span>
-        <span style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7)">Ver todo</span>
+      <a href="/catalogo" class="home-logo-card animate-on-scroll" style="background:rgba(37,99,235,.06);border-color:rgba(37,99,235,.3)">
+        <div class="logo-img-wrap" style="color:var(--blue)">
+          <i class="ph ph-arrow-right" style="font-size:2.2rem;color:#2563EB"></i>
+        </div>
+        <h3 style="color:#0f172a">Ver todas</h3>
+        <span class="card-link">Ver catálogo →</span>
       </a>`;
   }
 
