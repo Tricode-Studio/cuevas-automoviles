@@ -534,34 +534,10 @@
       }
     }
 
-    // Fallback para entries no publicados (p. ej. DRAFT) visibles en el panel del CMS.
-    if (vehicles.length === 0 && apiV1Base) {
-      for (const slug of vehicleSlugCandidates) {
-        const tenantUrl = `${apiV1Base}/tenants/${encodeURIComponent(
-          config.tenantSlug
-        )}/content-types/${encodeURIComponent(slug)}/entries?page=1&pageSize=48`;
-        try {
-          const payload = await fetchJson(tenantUrl);
-          const rawTenantVehicles = Array.isArray(payload?.items)
-            ? payload.items
-            : extractInventoryArray(payload);
-          const normalizedTenantVehicles = rawTenantVehicles
-            .map((vehicle, index) => normalizeVehicle(vehicle, index))
-            .filter(Boolean);
-
-          vehiclesUrl = tenantUrl;
-          vehiclesPayload = payload;
-          vehicles = normalizedTenantVehicles;
-          if (vehicles.length > 0) {
-            break;
-          }
-        } catch (error) {
-          if (!(error instanceof Error) || !error.message.includes('404')) {
-            throw error;
-          }
-        }
-      }
-    }
+    // Importante: no usamos fallback al endpoint privado /tenants/.../entries
+    // para evitar exponer borradores/inactivos en el sitio público.
+    void apiV1Base;
+    void vehiclesPayload;
 
     let brands = [];
     let brandCards = [];
