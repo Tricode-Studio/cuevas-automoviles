@@ -12,6 +12,7 @@
     fiat: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Fiat_Automobiles_logo.svg/320px-Fiat_Automobiles_logo.svg.png',
     ford: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/320px-Ford_logo_flat.svg.png',
     honda: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Honda_Logo.svg/320px-Honda_Logo.svg.png',
+    hyundai: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Hyundai_logo.svg/320px-Hyundai_logo.svg.png',
     jac: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/JAC_Motors_logo.svg/320px-JAC_Motors_logo.svg.png',
     kia: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Kia-logo.svg/320px-Kia-logo.svg.png',
     mitsubishi: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Mitsubishi_logo.svg/320px-Mitsubishi_logo.svg.png',
