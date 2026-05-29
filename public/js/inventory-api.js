@@ -7,9 +7,12 @@
     'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format';
   const BRAND_LOGO_FALLBACKS = {
     byd: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BYD_Auto_2022_logo.svg/320px-BYD_Auto_2022_logo.svg.png',
+    chery: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Chery_logo.svg/320px-Chery_logo.svg.png',
     chevrolet: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Chevrolet-logo.png/320px-Chevrolet-logo.png',
+    fiat: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Fiat_Automobiles_logo.svg/320px-Fiat_Automobiles_logo.svg.png',
     ford: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/320px-Ford_logo_flat.svg.png',
     honda: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Honda_Logo.svg/320px-Honda_Logo.svg.png',
+    jac: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/JAC_Motors_logo.svg/320px-JAC_Motors_logo.svg.png',
     kia: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Kia-logo.svg/320px-Kia-logo.svg.png',
     mitsubishi: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Mitsubishi_logo.svg/320px-Mitsubishi_logo.svg.png',
     nissan: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Nissan-logo.svg/320px-Nissan-logo.svg.png',
@@ -516,6 +519,22 @@
     ).sort((a, b) => a.localeCompare(b, 'es'));
   }
 
+  function normalizeBrandCardsFromVehicleInventory(vehicles) {
+    const byBrand = new Map();
+    for (const vehicle of vehicles || []) {
+      const name = cleanText(vehicle?.brand);
+      if (!name) continue;
+      const key = normalizeToken(name);
+      if (!byBrand.has(key)) {
+        byBrand.set(key, {
+          name,
+          image: resolveBrandImage(name, ''),
+        });
+      }
+    }
+    return Array.from(byBrand.values()).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  }
+
   function normalizeBrandCardsFromPayload(payload) {
     const items = Array.isArray(payload?.items) ? payload.items : extractInventoryArray(payload);
     const cards = [];
@@ -674,16 +693,7 @@
     }
 
     if (!brands.length) {
-      const byBrand = new Map();
-      for (const vehicle of vehicles) {
-        const name = cleanText(vehicle.brand);
-        if (!name) continue;
-        const key = normalizeToken(name);
-        if (!byBrand.has(key)) {
-          byBrand.set(key, { name, image: resolveBrandImage(name, cleanText(vehicle.img || '')) });
-        }
-      }
-      brandCards = Array.from(byBrand.values()).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+      brandCards = normalizeBrandCardsFromVehicleInventory(vehicles);
       brands = brandCards.map((card) => card.name);
     }
 
@@ -724,32 +734,41 @@
     const apiV1Base = buildCmsApiV1Base(config.apiBaseUrl);
     const brandsPublicUrl = `${publicBase}/brands?limit=48`;
 
-    try {
-      const brandsPayload = await fetchJson(brandsPublicUrl);
-      const brandCards = normalizeBrandCardsFromPayload(brandsPayload);
+    const tryBuild = async (url) => {
+      const payload = await fetchJson(url);
+      const brandCards = normalizeBrandCardsFromPayload(payload);
       const brands = brandCards.map((card) => card.name);
-      return { brands, brandCards, manifest: null };
-    } catch (error) {
-      if (apiV1Base) {
-        const tenantBrandsUrl = `${apiV1Base}/tenants/${encodeURIComponent(
-          config.tenantSlug
-        )}/content-types/brands/entries?page=1&pageSize=48&status=PUBLISHED`;
-        try {
-          const tenantBrandsPayload = await fetchJson(tenantBrandsUrl);
-          const brandCards = normalizeBrandCardsFromPayload(tenantBrandsPayload);
-          const brands = brandCards.map((card) => card.name);
-          return { brands, brandCards, manifest: null };
-        } catch (tenantBrandsError) {
-          // Si falla este fallback, continuamos con fallback general.
-        }
-      }
+      return { brands, brandCards };
+    };
 
-      const fallbackInventory = await fetchInventoryFromCms(config);
-      return {
-        brands: fallbackInventory.brands,
-        brandCards: fallbackInventory.brandCards,
-        manifest: fallbackInventory.manifest,
-      };
+    try {
+      const publicResult = await tryBuild(brandsPublicUrl);
+      if (publicResult.brands.length > 0) {
+        return { ...publicResult, manifest: null };
+      }
+    } catch (error) {
+      // Intentamos fallback.
+    }
+
+    if (apiV1Base) {
+      const tenantBrandsUrl = `${apiV1Base}/tenants/${encodeURIComponent(
+        config.tenantSlug
+      )}/content-types/brands/entries?page=1&pageSize=48&status=PUBLISHED`;
+      try {
+        const tenantResult = await tryBuild(tenantBrandsUrl);
+        if (tenantResult.brands.length > 0) {
+          return { ...tenantResult, manifest: null };
+        }
+      } catch (tenantBrandsError) {
+        // Si falla este fallback, continuamos con fallback general.
+      }
+    }
+
+    const fallbackInventory = await fetchInventoryFromCms(config);
+    return {
+      brands: fallbackInventory.brands,
+      brandCards: fallbackInventory.brandCards,
+      manifest: fallbackInventory.manifest,
     }
   }
 
