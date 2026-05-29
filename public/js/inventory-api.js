@@ -427,7 +427,7 @@
     const recommendedCatalogSlug = cleanText(
       manifest?.recommendations?.catalogContentTypeSlug
     );
-    if (recommendedCatalogSlug) {
+    if (recommendedCatalogSlug && !isBrandLike(recommendedCatalogSlug)) {
       candidates.push(recommendedCatalogSlug);
     }
 
@@ -619,10 +619,35 @@
       }
     }
 
-    // Importante: no usamos fallback al endpoint privado /tenants/.../entries
-    // para evitar exponer borradores/inactivos en el sitio público.
-    void apiV1Base;
-    void vehiclesPayload;
+    // Fallback controlado: si la API pública no devuelve unidades, intentamos
+    // el endpoint tenant forzando status=PUBLISHED para no exponer borradores.
+    if (vehicles.length === 0 && apiV1Base) {
+      for (const slug of vehicleSlugCandidates) {
+        const tenantUrl = `${apiV1Base}/tenants/${encodeURIComponent(
+          config.tenantSlug
+        )}/content-types/${encodeURIComponent(slug)}/entries?page=1&pageSize=48&status=PUBLISHED`;
+        try {
+          const payload = await fetchJson(tenantUrl);
+          const rawTenantVehicles = Array.isArray(payload?.items)
+            ? payload.items
+            : extractInventoryArray(payload);
+          const normalizedTenantVehicles = rawTenantVehicles
+            .map((vehicle, index) => normalizeVehicle(vehicle, index))
+            .filter(Boolean);
+
+          vehiclesUrl = tenantUrl;
+          vehiclesPayload = payload;
+          vehicles = normalizedTenantVehicles;
+          if (vehicles.length > 0) {
+            break;
+          }
+        } catch (error) {
+          if (!(error instanceof Error) || !error.message.includes('404')) {
+            throw error;
+          }
+        }
+      }
+    }
 
     let brands = [];
     let brandCards = [];
@@ -696,6 +721,7 @@
 
   async function fetchBrandsFromCms(config) {
     const publicBase = buildCmsPublicBase(config.apiBaseUrl, config.tenantSlug);
+    const apiV1Base = buildCmsApiV1Base(config.apiBaseUrl);
     const brandsPublicUrl = `${publicBase}/brands?limit=48`;
 
     try {
@@ -704,6 +730,20 @@
       const brands = brandCards.map((card) => card.name);
       return { brands, brandCards, manifest: null };
     } catch (error) {
+      if (apiV1Base) {
+        const tenantBrandsUrl = `${apiV1Base}/tenants/${encodeURIComponent(
+          config.tenantSlug
+        )}/content-types/brands/entries?page=1&pageSize=48&status=PUBLISHED`;
+        try {
+          const tenantBrandsPayload = await fetchJson(tenantBrandsUrl);
+          const brandCards = normalizeBrandCardsFromPayload(tenantBrandsPayload);
+          const brands = brandCards.map((card) => card.name);
+          return { brands, brandCards, manifest: null };
+        } catch (tenantBrandsError) {
+          // Si falla este fallback, continuamos con fallback general.
+        }
+      }
+
       const fallbackInventory = await fetchInventoryFromCms(config);
       return {
         brands: fallbackInventory.brands,
