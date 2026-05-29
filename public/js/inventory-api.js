@@ -27,6 +27,25 @@
     'autos',
     'cars',
   ];
+  const KNOWN_BRANDS = [
+    'toyota',
+    'volkswagen',
+    'chevrolet',
+    'ford',
+    'fiat',
+    'nissan',
+    'peugeot',
+    'honda',
+    'hyundai',
+    'kia',
+    'suzuki',
+    'renault',
+    'byd',
+    'mitsubishi',
+    'mercedes',
+    'bmw',
+    'audi',
+  ];
   const CACHE_PREFIX = 'cuevas:inventory-cache:v1';
   const CACHE_TTL_MS = {
     inventory: 60 * 1000,
@@ -85,6 +104,26 @@
       token === 'destacado' ||
       token === 'featured'
     );
+  }
+
+  function inferBrandModelFromTitle(title) {
+    const text = cleanText(title);
+    if (!text) return { brand: '', model: '', year: null };
+
+    const tokens = text.split(/\s+/).filter(Boolean);
+    if (!tokens.length) return { brand: '', model: text, year: null };
+
+    const first = normalizeToken(tokens[0]);
+    const brand = KNOWN_BRANDS.includes(first) ? tokens[0] : '';
+    const yearMatch = text.match(/\b(19|20)\d{2}\b/);
+    const year = yearMatch ? Number(yearMatch[0]) : null;
+    const model = brand ? tokens.slice(1).join(' ') : text;
+
+    return {
+      brand,
+      model: cleanText(model),
+      year: Number.isFinite(year) ? year : null,
+    };
   }
 
   function toImageList(raw) {
@@ -306,9 +345,19 @@
     const data = rawVehicle.data && typeof rawVehicle.data === 'object' ? rawVehicle.data : rawVehicle;
     const media = Array.isArray(rawVehicle.media) ? rawVehicle.media : [];
 
-    const brand = cleanText(pick(data, ['brand', 'marca', 'make']));
-    const model = cleanText(pick(data, ['model', 'modelo', 'name', 'nombre']));
-    const year = toNumber(pick(data, ['year', 'anio', 'año']));
+    const rawTitle = cleanText(
+      pick(rawVehicle, ['title', 'name']) || pick(data, ['title', 'name', 'nombre'])
+    );
+    const inferredFromTitle = inferBrandModelFromTitle(rawTitle);
+
+    const brand =
+      cleanText(pick(data, ['brand', 'marca', 'make'])) || inferredFromTitle.brand;
+    const model =
+      cleanText(pick(data, ['model', 'modelo', 'name', 'nombre'])) ||
+      inferredFromTitle.model;
+    const year =
+      toNumber(pick(data, ['year', 'anio', 'año'])) ??
+      inferredFromTitle.year;
     const price = toNumber(pick(data, ['price', 'precio', 'usd', 'valor']));
     const km = toNumber(
       pick(data, ['km', 'kms', 'kilometros', 'kilometraje', 'mileageKm', 'mileage'])
@@ -342,12 +391,12 @@
       pick(rawVehicle, ['id', '_id', 'uuid', 'slug']) ||
       `${normalizeToken(brand)}-${normalizeToken(model)}-${year || index + 1}`;
 
-    if (!brand && !model) return null;
+    if (!brand && !model && !rawTitle) return null;
 
     return {
       id,
       brand: brand || 'Sin marca',
-      model: model || 'Sin modelo',
+      model: model || rawTitle || 'Sin modelo',
       year: year || 0,
       price: price || 0,
       km: km || 0,
@@ -368,15 +417,44 @@
       types.map((type) => [normalizeToken(type.slug), cleanText(type.slug)])
     );
     const candidates = [];
+    const isBrandLike = (value) =>
+      /\b(brand|brands|marca|marcas)\b/i.test(cleanText(value));
 
     if (cleanText(preferredSlug)) {
       candidates.push(cleanText(preferredSlug));
+    }
+
+    const recommendedCatalogSlug = cleanText(
+      manifest?.recommendations?.catalogContentTypeSlug
+    );
+    if (recommendedCatalogSlug) {
+      candidates.push(recommendedCatalogSlug);
     }
 
     const orderedKnown = DEFAULT_VEHICLES_SLUG_CANDIDATES
       .map((slug) => bySlug.get(normalizeToken(slug)))
       .filter(Boolean);
     candidates.push(...orderedKnown);
+
+    const byModule = types
+      .filter((type) => {
+        const module = normalizeToken(type.module);
+        const slug = cleanText(type.slug);
+        const name = cleanText(type.name);
+        return module === 'catalog' && !isBrandLike(slug) && !isBrandLike(name);
+      })
+      .sort((a, b) => Number(b.publishedCount || 0) - Number(a.publishedCount || 0))
+      .map((type) => cleanText(type.slug));
+    candidates.push(...byModule);
+
+    const byNameHints = types
+      .filter((type) => {
+        const slug = cleanText(type.slug);
+        const name = cleanText(type.name);
+        return /vehicle|vehicul|auto|car|product|producto/i.test(`${slug} ${name}`);
+      })
+      .map((type) => cleanText(type.slug));
+    candidates.push(...byNameHints);
 
     const byFields = types
       .filter((type) => {
@@ -413,6 +491,13 @@
   function pickBrandsContentTypeSlug(manifest) {
     const types = Array.isArray(manifest?.contentTypes) ? manifest.contentTypes : [];
     const brands = types.find((type) => normalizeToken(type.slug) === 'brands');
+    if (brands) return brands.slug;
+    const heuristic = types.find((type) =>
+      /\b(brand|brands|marca|marcas)\b/i.test(`${cleanText(type.slug)} ${cleanText(type.name)}`)
+    );
+    if (heuristic) return heuristic.slug;
+    const moduleCandidate = types.find((type) => normalizeToken(type.module) === 'catalog');
+    if (moduleCandidate) return moduleCandidate.slug;
     return brands ? brands.slug : '';
   }
 
