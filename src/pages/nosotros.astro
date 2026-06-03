@@ -24,7 +24,7 @@ import Layout from '../layouts/Layout.astro';
 <!-- STATS STRIP -->
 <div style="background:var(--blue);padding:40px 0">
   <div class="container">
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:24px;text-align:center;justify-content:center;justify-items:center">
+    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:center;text-align:center">
       <div>
         <div style="font-size:2.5rem;font-weight:900;color:var(--white)"><span data-target="36">0</span>+</div>
         <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.1em">Años en el mercado</div>
@@ -135,11 +135,13 @@ import Layout from '../layouts/Layout.astro';
       <p class="section-sub">Un equipo apasionado comprometido a brindarte la mejor experiencia.</p>
     </div>
     <div class="team-grid">
-      <div class="team-card animate-on-scroll">
-        <div class="team-avatar"><i class="ph ph-user-tie"></i></div>
+      <div class="team-card animate-on-scroll" style="border-top: 3px solid var(--blue)">
+        <div class="team-avatar" style="display:flex;align-items:center;justify-content:center;padding:20px">
+          <img src="/images/logoparagoogle.png" alt="Eduardo Cuevas Ferrari - Fundador" style="width:100px;height:auto;object-fit:contain;filter:brightness(0) invert(1);opacity:.95">
+        </div>
         <div class="team-name">Eduardo Cuevas Ferrari</div>
-        <div class="team-role">Titular y Director</div>
-        <div class="team-desc">Más de 36 años en el sector automotriz y comercialm. Fundador de la automotora y el alma de cada negocio que sale de Cuevas.</div>
+        <div class="team-role">Titular y Fundador</div>
+        <div class="team-desc">Más de 36 años en el sector automotriz y comercial. Fundador de la automotora y el alma de cada negocio que sale de Cuevas.</div>
       </div>
       <div class="team-card animate-on-scroll delay-1">
         <div class="team-avatar"><i class="ph ph-car"></i></div>

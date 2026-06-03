@@ -13,8 +13,6 @@ const filterFuel = document.getElementById('filterFuel');
 const filterTrans = document.getElementById('filterTrans');
 const filterYearMin = document.getElementById('filterYearMin');
 const filterYearMax = document.getElementById('filterYearMax');
-const filterPriceMin = document.getElementById('filterPriceMin');
-const filterPriceMax = document.getElementById('filterPriceMax');
 const filterSort = document.getElementById('filterSort');
 const catalogGrid = document.getElementById('catalogGrid');
 const catalogCount = document.getElementById('catalogCount');
@@ -91,8 +89,6 @@ function applyFilters() {
   const trans = filterTrans?.value || '';
   const yearMin = parseInt(filterYearMin?.value, 10) || 0;
   const yearMax = parseInt(filterYearMax?.value, 10) || 9999;
-  const priceMin = parseInt(filterPriceMin?.value, 10) || 0;
-  const priceMax = parseInt(filterPriceMax?.value, 10) || 999999999;
   const search = searchInput?.value.toLowerCase().trim() || '';
   const sort = filterSort?.value || 'featured';
 
@@ -101,7 +97,6 @@ function applyFilters() {
     if (fuel && car.fuel.toLowerCase() !== fuel.toLowerCase()) return false;
     if (trans && car.trans.toLowerCase() !== trans.toLowerCase()) return false;
     if (car.year < yearMin || car.year > yearMax) return false;
-    if (car.price < priceMin || car.price > priceMax) return false;
     if (search && !`${car.brand} ${car.model} ${car.year}`.toLowerCase().includes(search)) return false;
     return true;
   });
@@ -264,7 +259,7 @@ window.goPage = function goPage(page) {
 };
 
 
-[filterBrand, filterFuel, filterTrans, filterYearMin, filterYearMax, filterPriceMin, filterPriceMax, filterSort].forEach((el) => {
+[filterBrand, filterFuel, filterTrans, filterYearMin, filterYearMax, filterSort].forEach((el) => {
   el?.addEventListener('change', applyFilters);
 });
 
@@ -275,7 +270,7 @@ if (resetFilters) {
     [filterBrand, filterFuel, filterTrans, filterSort].forEach((el) => {
       if (el) el.value = '';
     });
-    [filterYearMin, filterYearMax, filterPriceMin, filterPriceMax].forEach((el) => {
+    [filterYearMin, filterYearMax].forEach((el) => {
       if (el) el.value = '';
     });
     if (searchInput) searchInput.value = '';
