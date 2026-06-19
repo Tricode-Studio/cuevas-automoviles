@@ -1,5 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const cmsApiBaseUrl =
+  import.meta.env.PUBLIC_CMS_API_BASE_URL || 'https://cms.tricode.studio/api/v1';
+const tenantSlug = import.meta.env.PUBLIC_CMS_TENANT_SLUG || 'cuevas-automoviles';
+const vehiclesSlug = import.meta.env.PUBLIC_CMS_VEHICLES_SLUG || '';
+const legacyCatalogApiUrl = import.meta.env.PUBLIC_CATALOG_API_URL || '';
 ---
 <Layout
   title="Marcas | Cuevas Automóviles · Trinidad, Uruguay"
@@ -162,73 +167,8 @@ import Layout from '../layouts/Layout.astro';
       <h2>Representantes oficiales</h2>
     </div>
 
-    <div class="logo-grid">
-
-      <!-- JAC -->
-      <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesan%20los%20veh%C3%ADculos%20JAC" target="_blank" class="logo-card animate-on-scroll">
-        <div class="logo-img-wrap">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/JAC_logo_2011.svg?width=250"
-               alt="JAC logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">JAC</span>
-        </div>
-        <h3>JAC</h3>
-        <p>Vehículos JAC, calidad y tecnología china con garantía y respaldo oficial en Trinidad.</p>
-        <span class="card-link">Consultar disponibilidad →</span>
-      </a>
-
-      <!-- Mitsubishi -->
-      <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesan%20los%20veh%C3%ADculos%20Mitsubishi" target="_blank" class="logo-card animate-on-scroll delay-1">
-        <div class="logo-img-wrap">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mitsubishi_motors_new_logo.svg?width=250"
-               alt="Mitsubishi logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">Mitsubishi</span>
-        </div>
-        <h3>Mitsubishi</h3>
-        <p>Confiabilidad japonesa reconocida mundialmente, con modelos para cada necesidad.</p>
-        <span class="card-link">Consultar disponibilidad →</span>
-      </a>
-
-      <!-- Chery -->
-      <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesan%20los%20veh%C3%ADculos%20Chery" target="_blank" class="logo-card animate-on-scroll delay-2">
-        <div class="logo-img-wrap">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Chery_logo.svg?width=250"
-               alt="Chery logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">Chery</span>
-        </div>
-        <h3>Chery</h3>
-        <p>Diseño moderno y tecnología de última generación a precios competitivos.</p>
-        <span class="card-link">Consultar disponibilidad →</span>
-      </a>
-
-      <!-- Fiat -->
-      <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesan%20los%20veh%C3%ADculos%20Fiat" target="_blank" class="logo-card animate-on-scroll delay-3">
-        <div class="logo-img-wrap">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/FIAT_logo_(2020).svg?width=250"
-               alt="Fiat logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">Fiat</span>
-        </div>
-        <h3>Fiat</h3>
-        <p>Tradición italiana con vehículos versátiles, ideales para la ciudad y el día a día.</p>
-        <span class="card-link">Consultar disponibilidad →</span>
-      </a>
-
-      <!-- Volvo -->
-      <a href="https://wa.me/59899364330?text=Hola!%20Me%20interesan%20los%20veh%C3%ADculos%20Volvo" target="_blank" class="logo-card animate-on-scroll">
-        <div class="logo-img-wrap">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Volvo-Iron-Mark-Black.svg?width=250"
-               alt="Volvo logo"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <span class="logo-text" style="display:none">Volvo</span>
-        </div>
-        <h3>Volvo</h3>
-        <p>Seguridad y prestigio sueco, referentes mundiales en innovación automotriz.</p>
-        <span class="card-link">Consultar disponibilidad →</span>
-      </a>
-
+    <div class="logo-grid" id="vehicleBrandsGrid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">Cargando marcas de vehículos...</div>
     </div><!-- /logo-grid autos -->
 
     <!-- ── BICICLETAS ───────────────────────────────────── -->
@@ -364,5 +304,78 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </div>
 </section>
+
+<script define:vars={{ cmsApiBaseUrl, tenantSlug, vehiclesSlug, legacyCatalogApiUrl }}>
+  window.__CUEVAS_CMS_API_BASE__ = cmsApiBaseUrl;
+  window.__CUEVAS_TENANT_SLUG__ = tenantSlug;
+  window.__CUEVAS_CMS_VEHICLES_SLUG__ = vehiclesSlug;
+  window.__CUEVAS_CATALOG_API_URL__ = legacyCatalogApiUrl;
+</script>
+<script src="/js/inventory-api.js" is:inline></script>
+<script is:inline>
+  (async function renderVehicleBrands() {
+    const grid = document.getElementById('vehicleBrandsGrid');
+    if (!grid || !window.CuevasInventoryApi) return;
+
+    // Solo se muestran los representantes oficiales actuales del local.
+    const ALLOWED_BRANDS = ['jac', 'mitsubishi', 'chery', 'fiat', 'volvo'];
+    const normalize = (value) =>
+      String(value ?? '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .trim();
+
+    const escapeHtml = (value) =>
+      String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    try {
+      const hasFetchBrands = typeof window.CuevasInventoryApi.fetchBrands === 'function';
+      const { brands, brandCards } = hasFetchBrands
+        ? await window.CuevasInventoryApi.fetchBrands()
+        : await window.CuevasInventoryApi.fetchInventory();
+      const allCards = Array.isArray(brandCards) && brandCards.length
+        ? brandCards
+        : (Array.isArray(brands) ? brands : []).map((name) => ({ name, image: '' }));
+
+      const normalizedCards = allCards.filter((card) =>
+        ALLOWED_BRANDS.includes(normalize(card?.name))
+      );
+
+      if (!normalizedCards.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">No hay marcas publicadas.</div>';
+        return;
+      }
+
+      grid.innerHTML = normalizedCards.map((brand, index) => {
+        const safeName = escapeHtml(brand?.name || '');
+        const safeImage = brand?.image ? escapeHtml(brand.image) : '';
+        return `
+        <a href="/catalogo?marca=${encodeURIComponent(brand.name)}" class="logo-card animate-on-scroll delay-${index % 4}">
+          <div class="logo-img-wrap">
+            ${
+              safeImage
+                ? `<img src="${safeImage}" alt="${safeName} logo" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`
+                : ''
+            }
+            <span class="logo-text" style="${safeImage ? 'display:none;' : ''}">${safeName}</span>
+          </div>
+          <h3>${safeName}</h3>
+          <p>Explorá los vehículos disponibles de ${safeName} en nuestro catálogo actualizado.</p>
+          <span class="card-link">Ver vehículos ${safeName} →</span>
+        </a>
+      `;
+      }).join('');
+    } catch (error) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--grey-dark);padding:18px 0">No se pudieron cargar las marcas desde el VPS.</div>';
+      console.error('[Marcas] Error cargando marcas:', error);
+    }
+  })();
+</script>
 
 </Layout>
