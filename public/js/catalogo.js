@@ -4,7 +4,6 @@
 
 let cars = [];
 let filtered = [];
-let catalogBrands = [];
 let currentPage = 1;
 const PER_PAGE = 9;
 
@@ -71,10 +70,10 @@ function populateSelectFromData(selectEl, values, emptyLabel) {
 }
 
 function populateFilterOptions() {
-  const brandsFromCars = Array.from(new Set(cars.map((car) => car.brand))).sort((a, b) =>
+  // Solo se listan marcas con al menos un vehículo cargado en el catálogo.
+  const brands = Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) =>
     a.localeCompare(b, 'es')
   );
-  const brands = catalogBrands.length ? catalogBrands : brandsFromCars;
   const fuels = Array.from(new Set(cars.map((car) => car.fuel).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'));
   const trans = Array.from(new Set(cars.map((car) => car.trans).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'));
 
@@ -289,9 +288,8 @@ async function initCatalog() {
 
   try {
     if (catalogCount) catalogCount.textContent = 'Cargando vehículos...';
-    const { vehicles, brands } = await window.CuevasInventoryApi.fetchInventory();
+    const { vehicles } = await window.CuevasInventoryApi.fetchInventory();
     cars = vehicles;
-    catalogBrands = Array.isArray(brands) ? brands : [];
     filtered = [...cars];
     populateFilterOptions();
 

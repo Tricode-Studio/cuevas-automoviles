@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const cmsApiBaseUrl =
+  import.meta.env.PUBLIC_CMS_API_BASE_URL || 'https://cms.tricode.studio/api/v1';
+const tenantSlug = import.meta.env.PUBLIC_CMS_TENANT_SLUG || 'cuevas-automoviles';
 ---
 <Layout
   title="Contacto | Cuevas Automóviles · Trinidad, Uruguay"
@@ -153,6 +156,7 @@ import Layout from '../layouts/Layout.astro';
               <i class="ph ph-lock"></i> Tus datos son confidenciales y no se comparten con terceros.
             </p>
           </div>
+          <p id="formError" style="display:none;margin-top:16px;color:#c0392b;font-size:.88rem"></p>
         </form>
 
         <!-- Success state -->
@@ -194,5 +198,11 @@ import Layout from '../layouts/Layout.astro';
       </a>
     </div>
   </div>
+
+<script define:vars={{ cmsApiBaseUrl, tenantSlug }}>
+  window.__CUEVAS_CMS_API_BASE__ = cmsApiBaseUrl;
+  window.__CUEVAS_TENANT_SLUG__ = tenantSlug;
+</script>
+<script src="/js/inventory-api.js" is:inline></script>
 
 </Layout>

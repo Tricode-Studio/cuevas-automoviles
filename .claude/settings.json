@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/Tricode/tricode-cms/apps/api/prisma/**)"
+    ]
+  }
+}

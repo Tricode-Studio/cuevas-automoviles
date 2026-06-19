@@ -827,9 +827,42 @@
     });
   }
 
+  async function submitContactSubmission(payload, options) {
+    const config = resolveConfig(options);
+    const publicBase = buildCmsPublicBase(config.apiBaseUrl, config.tenantSlug);
+    if (!publicBase) {
+      throw new Error('No se pudo determinar la URL del CMS.');
+    }
+
+    const response = await fetch(`${publicBase}/contact-submissions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      let message = `No se pudo enviar el mensaje (${response.status}).`;
+      try {
+        const errorPayload = await response.json();
+        const apiMessage = Array.isArray(errorPayload?.message)
+          ? errorPayload.message.find((entry) => typeof entry === 'string')
+          : errorPayload?.message;
+        if (typeof apiMessage === 'string' && apiMessage.trim()) {
+          message = apiMessage.trim();
+        }
+      } catch {
+        // keep default message
+      }
+      throw new Error(message);
+    }
+
+    return response.json();
+  }
+
   global.CuevasInventoryApi = {
     fetchInventory,
     fetchBrands,
+    submitContactSubmission,
     resolveConfig,
     buildCmsPublicBase,
   };

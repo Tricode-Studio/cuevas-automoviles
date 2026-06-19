@@ -242,17 +242,43 @@ if (counterEls.length) {
 // ── CONTACT FORM ──────────────────────────────────────────────
 const contactForm = document.getElementById('contactForm');
 const formSuccess  = document.getElementById('formSuccess');
+const formError    = document.getElementById('formError');
 
 if (contactForm) {
   contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = contactForm.querySelector('button[type="submit"]');
+    const originalLabel = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Enviando…';
-    // Simulate send
-    await new Promise(r => setTimeout(r, 1200));
-    contactForm.style.display = 'none';
-    if (formSuccess) formSuccess.classList.add('show');
+    if (formError) { formError.style.display = 'none'; formError.textContent = ''; }
+
+    const subjectSelect = contactForm.querySelector('#subject');
+    const payload = {
+      firstName: contactForm.querySelector('#firstName')?.value.trim() || '',
+      lastName: contactForm.querySelector('#lastName')?.value.trim() || '',
+      phone: contactForm.querySelector('#phone')?.value.trim() || '',
+      email: contactForm.querySelector('#email')?.value.trim() || '',
+      subject: subjectSelect?.options[subjectSelect.selectedIndex]?.text || '',
+      vehicleInterest: contactForm.querySelector('#vehicle')?.value.trim() || '',
+      message: contactForm.querySelector('#message')?.value.trim() || '',
+    };
+
+    try {
+      if (!window.CuevasInventoryApi || typeof window.CuevasInventoryApi.submitContactSubmission !== 'function') {
+        throw new Error('No se pudo conectar con el servidor. Intentá nuevamente.');
+      }
+      await window.CuevasInventoryApi.submitContactSubmission(payload);
+      contactForm.style.display = 'none';
+      if (formSuccess) formSuccess.classList.add('show');
+    } catch (error) {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      if (formError) {
+        formError.textContent = error instanceof Error ? error.message : 'No se pudo enviar el mensaje. Intentá nuevamente.';
+        formError.style.display = 'block';
+      }
+    }
   });
 }
 
