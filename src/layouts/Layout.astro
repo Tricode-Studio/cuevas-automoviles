@@ -2,6 +2,7 @@
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import WhatsappFloat from '../components/WhatsappFloat.astro';
+import TrackingScript from '../components/TrackingScript.astro';
 import '../styles/styles.css';
 
 interface Props {
@@ -11,6 +12,11 @@ interface Props {
   activeLink?: string;
 }
 const { title, description = 'Cuevas Automóviles, concesionaria en Trinidad, Uruguay.', navClass = 'solid', activeLink = '' } = Astro.props;
+
+// Tracking (GA4 / Meta Pixel) gestionado desde el CMS -- ver TrackingScript.astro.
+// El CMS es la fuente de verdad: cambiar el ID ahí no requiere rebuild de este sitio.
+const cmsApiBaseUrl = import.meta.env.PUBLIC_CMS_API_BASE_URL || 'https://cms.tricode.studio/api/v1';
+const tenantSlug = import.meta.env.PUBLIC_CMS_TENANT_SLUG || 'cuevas-automoviles';
 ---
 <!doctype html>
 <html lang="es">
@@ -62,6 +68,8 @@ const { title, description = 'Cuevas Automóviles, concesionaria en Trinidad, Ur
   </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+  <TrackingScript cmsApiBaseUrl={cmsApiBaseUrl} tenantSlug={tenantSlug} />
 </head>
 <body>
   <Navbar navClass={navClass} activeLink={activeLink} />
